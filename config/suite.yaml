@@ -1,0 +1,90 @@
+default:
+  maskers:
+    constant:
+      type: ConstantMasker
+      feature_level: pixel
+      mask_value: 0.
+    random:
+      type: RandomMasker
+      feature_level: pixel
+    blur:
+      type: BlurringMasker
+      feature_level: pixel
+      kernel_size: 0.5
+  activation_fns:
+    - linear
+    - softmax
+metrics:
+  infidelity:
+    type: Infidelity
+    num_perturbations: 1000
+    perturbation_generators:
+      noisy_bl:
+        type: NoisyBaselinePerturbationGenerator
+        sd: 0.2
+      gaussian:
+        type: GaussianPerturbationGenerator
+        sd: 0.2
+      square:
+        type: SquarePerturbationGenerator
+        square_size: 5
+  seg_sensitivity_n:
+    type: SegSensitivityN
+    min_subset_size: 0.1
+    max_subset_size: 0.5
+    num_steps: 10
+    num_subsets: 100
+  sensitivity_n:
+    type: SensitivityN
+    min_subset_size: 0.1
+    max_subset_size: 0.5
+    num_steps: 10
+    num_subsets: 100
+  minimal_subset_deletion:
+    type: MinimalSubsetDeletion
+    num_steps: 100
+  minimal_subset_insertion:
+    type: MinimalSubsetInsertion
+    num_steps: 100
+  irof_morf:
+    type: Irof
+    start: 0.
+    stop: 1.
+    num_steps: 100
+    mode: morf
+  irof_lerf:
+    type: Irof
+    start: 0.
+    stop: 1.
+    num_steps: 100
+    mode: lerf
+  deletion_morf:
+    type: Deletion
+    start: 0.
+    stop: 0.15
+    num_steps: 100
+    mode: morf
+  deletion_lerf:
+    type: Deletion
+    start: 0.
+    stop: 0.15
+    num_steps: 100
+    mode: lerf
+  insertion_morf:
+    type: Deletion
+    start: 1.
+    stop: 0.85
+    num_steps: 100
+    mode: lerf
+  insertion_lerf:
+    type: Deletion
+    start: 1.
+    stop: 0.85
+    num_steps: 100
+    mode: morf
+  max_sensitivity:
+    type: MaxSensitivity
+    num_perturbations: 50
+    radius: 0.1
+  impact_coverage:
+    type: ImpactCoverage
