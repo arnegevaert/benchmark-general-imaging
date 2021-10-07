@@ -4,11 +4,11 @@ from os import path
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from experiments.general_imaging.lib.models import Resnet20, Resnet18, Resnet56, Resnet50
-from experiments.general_imaging.lib.datasets import ImagenetDataset, VOCDataset
+from lib.models import Resnet20, Resnet18, Resnet56, Resnet50
+from lib.datasets import ImagenetDataset, VOCDataset
 
 
-_DATA_LOC = os.environ["BM_DATA_LOC"] if "BM_DATA_LOC" in os.environ else path.join(path.dirname(__file__), "../../../data")
+_DATA_LOC = os.environ["BM_DATA_LOC"] if "BM_DATA_LOC" in os.environ else path.join(path.dirname(__file__), "../data")
 
 
 def get_dataset_model(name, model_name=None, train=False):
