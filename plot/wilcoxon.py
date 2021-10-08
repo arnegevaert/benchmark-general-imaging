@@ -7,7 +7,7 @@ import numpy as np
 from os import path
 import os
 import glob
-from experiments.general_imaging.plot.dfs import get_default_dfs, get_all_dfs
+from dfs import get_default_dfs, get_all_dfs
 from tqdm import tqdm
 
 

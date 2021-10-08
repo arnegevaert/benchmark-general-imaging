@@ -1,4 +1,4 @@
-source ../../../venv/bin/activate
+source ../venv/bin/activate
 
 # USAGE: ./generate_all.sh H5_DIR OUT_DIR
 

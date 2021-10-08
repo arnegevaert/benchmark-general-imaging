@@ -1,6 +1,6 @@
 import argparse
 from attrbench.suite import SuiteResult
-from experiments.general_imaging.plot.dfs import get_all_dfs
+from dfs import get_all_dfs
 from pingouin import wilcoxon
 import seaborn as sns
 import pandas as pd
