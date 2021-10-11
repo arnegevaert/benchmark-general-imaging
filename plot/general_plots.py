@@ -1,15 +1,16 @@
 import argparse
+import seaborn as sns
 import pandas as pd
 from tqdm import tqdm
 import matplotlib as mpl
 import numpy as np
 import os
 from attrbench.suite import SuiteResult
-from wilcoxon import wilcoxon
-from krip import compute_krippendorff_alpha, plot_krippendorff_alpha
-from inter_metric_correlations import inter_metric_correlations
+from util.wilcoxon import wilcoxon
+from util.krip import compute_krippendorff_alpha, plot_krippendorff_alpha
+from util.inter_metric_correlations import inter_metric_correlations
 from matplotlib import pyplot as plt
-from pairwise_tests import pairwise_tests
+from util.pairwise_tests import pairwise_tests
 from attrbench.suite.plot import InterMetricCorrelationPlot
 
 
@@ -34,6 +35,20 @@ if __name__ == "__main__":
         for filename in [os.path.join(args.in_dir, f"{ds}.h5") for ds in datasets]
     }
 
+    ######################
+    # KRIPPENDORFF ALPHA #
+    ######################
+    sns.set()
+    for metric_selection in ("all", "default"):
+        k_a = {
+            ds_name: compute_krippendorff_alpha(res, metric_selection=metric_selection)
+            for ds_name, res in tqdm(result_objects.items())
+        }
+        k_a = pd.DataFrame(k_a)
+        fig = plot_krippendorff_alpha(k_a, ["#036d08", "#9de78c", "#08036d", "#845eb3", "#e7c3ff", "#6d012a", "#b65a73", "#ffaac4"])
+        fig.savefig(os.path.join(args.out_dir, f"krip_bar_{metric_selection}.png"), bbox_inches="tight", dpi=250)
+    sns.reset_orig()
+
     ############
     # WILCOXON #
     ############
@@ -43,19 +58,6 @@ if __name__ == "__main__":
             fig = wilcoxon(res_obj, metric_selection)
             fig.savefig(os.path.join(args.out_dir, f"wilcoxon_{metric_selection}", f"{ds_name}.png"), bbox_inches="tight", dpi=250)
             plt.close(fig)
-
-    ######################
-    # KRIPPENDORFF ALPHA #
-    ######################
-    for metric_selection in ("all", "default"):
-        color = ["#036d08", "#9de78c", "#08036d", "#845eb3", "#e7c3ff", "#6d012a", "#b65a73", "#ffaac4"]
-        k_a = {
-            ds_name: compute_krippendorff_alpha(res, metric_selection=metric_selection)
-            for ds_name, res in tqdm(result_objects.items())
-        }
-        k_a = pd.DataFrame(k_a)
-        fig = plot_krippendorff_alpha(k_a, color)
-        fig.savefig(os.path.join(args.out_dir, f"krip_bar_{metric_selection}.png"), bbox_inches="tight", dpi=250)
 
     #############################
     # INTER-METRIC CORRELATIONS #

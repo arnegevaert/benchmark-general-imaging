@@ -1,5 +1,5 @@
 from attrbench.suite.plot import InterMetricCorrelationPlot
-from dfs import get_default_dfs, get_all_dfs
+from util.dfs import get_default_dfs, get_all_dfs
 
 
 def inter_metric_correlations(res_obj, metric_selection="default"):

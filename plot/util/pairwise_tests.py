@@ -1,4 +1,4 @@
-from dfs import get_all_dfs
+from util.dfs import get_all_dfs
 from pingouin import wilcoxon
 import seaborn as sns
 import pandas as pd
@@ -16,8 +16,6 @@ def pairwise_tests(res_obj, method1, method2, title=None):
         res = wilcoxon(x=df[method1], y=df[method2], alternative="two-sided")
         pvalue = res["p-val"]["Wilcoxon"]
         cles = res["CLES"]["Wilcoxon"]
-        out_str = f"{key}: p={pvalue:.3f} CLES={cles:.3f}"
-        out_str += " *" if pvalue < 0.01 else " -"
         result_cles[key] = cles if pvalue < 0.01 else 0.5
     sns.set_color_codes("muted")
     df = pd.DataFrame(result_cles, index=["CLES"]).transpose().reset_index().rename(columns={"index": "Metric"})
