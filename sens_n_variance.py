@@ -24,9 +24,8 @@ if __name__ == "__main__":
     ds, model, _ = get_dataset_model(args.dataset, model_name=args.model)
     dl = DataLoader(ds, batch_size=args.batch_size,
                     shuffle=True, num_workers=4)
-    #deepshap = attribution.DeepShap(
-    #    model, reference_dataset=ds, n_baseline_samples=10)
-    deepshap = attribution.InputXGradient(model)
+    deepshap = attribution.DeepShap(
+        model, reference_dataset=ds, n_baseline_samples=10)
 
     model.eval()
     model = model.to(device)
