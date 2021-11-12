@@ -34,8 +34,6 @@ if __name__ == "__main__":
     it = iter(dl)
     sens_n_variances = []
     seg_sens_n_variances = []
-    prog = tqdm(total=args.num_samples)
-    prog.update(n=0)
     while samples_done < args.num_samples:
         # Get a batch of samples
         samples, labels = next(it)
@@ -55,6 +53,8 @@ if __name__ == "__main__":
                 attrs = deepshap(samples, labels).mean(dim=1, keepdim=True).cpu().detach().numpy()
                 masker = ConstantMasker("pixel")
 
+                prog = tqdm(total=args.iterations)
+                prog.update(n=0)
                 for i in range(args.iterations):
                     sens_n_results.append(sensitivity_n(samples, labels, model, attrs,
                                                         min_subset_size=.1, max_subset_size=.5,
@@ -64,11 +64,13 @@ if __name__ == "__main__":
                                                                 min_subset_size=.1, max_subset_size=.5,
                                                                 num_steps=10, num_subsets=100,
                                                                 masker=masker)["linear"])
+                    prog.update(1)
+                prog.close()
 
                 sens_n_variances.append(torch.stack(sens_n_results, dim=1).mean(dim=-1).var(dim=-1))
                 seg_sens_n_variances.append(torch.stack(seg_sens_n_results, dim=1).mean(dim=-1).var(dim=-1))
         samples_done += samples.shape[0]
-        prog.update(n=samples.shape[0])
+        print(f"{samples_done}/{args.num_samples}")
     
     prog.close()
     sens_n_variances = torch.cat(sens_n_variances).numpy()
