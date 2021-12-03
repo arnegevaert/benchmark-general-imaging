@@ -1,12 +1,13 @@
 import argparse
+import numpy as np
 from tqdm import tqdm
-import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from lib import attribution
 from lib.dataset_models import get_dataset_model
 from attrbench.metrics import sensitivity_n, seg_sensitivity_n
 from attrbench.lib.masking import ConstantMasker
+from os import path
 
 
 if __name__ == "__main__":
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--batch_size", type=int, default=4)
     parser.add_argument("-n", "--num_samples", type=int, default=4)
     parser.add_argument("-i", "--iterations", type=int, default=2)
-    parser.add_argument("-o", "--out_file", type=str, default="out.csv")
+    parser.add_argument("-o", "--out_dir", type=str, default="out")
     parser.add_argument("-c", "--cuda", action="store_true")
     args = parser.parse_args()
     device = "cuda"  # if torch.cuda.is_available() and args.cuda else "cpu"
@@ -32,16 +33,13 @@ if __name__ == "__main__":
 
     samples_done = 0
     it = iter(dl)
-    sens_n_variances = []
-    seg_sens_n_variances = []
+    sens_n_results = []
+    seg_sens_n_results = []
     while samples_done < args.num_samples:
         # Get a batch of samples
         samples, labels = next(it)
         samples = samples.to(device)
         labels = labels.to(device)
-
-        sens_n_results = []
-        seg_sens_n_results = []
 
         with torch.no_grad():
             # Use only correctly classified samples
@@ -53,28 +51,31 @@ if __name__ == "__main__":
                 attrs = deepshap(samples, labels).mean(dim=1, keepdim=True).cpu().detach().numpy()
                 masker = ConstantMasker("pixel")
 
+                sens_n_batch = []
+                seg_sens_n_batch = []
+
                 prog = tqdm(total=args.iterations)
                 prog.update(n=0)
                 for i in range(args.iterations):
-                    sens_n_results.append(sensitivity_n(samples, labels, model, attrs,
+                    sens_n_batch.append(sensitivity_n(samples, labels, model, attrs,
                                                         min_subset_size=.1, max_subset_size=.5,
                                                         num_steps=10, num_subsets=100,
-                                                        masker=masker)["linear"])
-                    seg_sens_n_results.append(seg_sensitivity_n(samples, labels, model, attrs,
+                                                        masker=masker)["linear"].mean(dim=-1))
+                    seg_sens_n_batch.append(seg_sensitivity_n(samples, labels, model, attrs,
                                                                 min_subset_size=.1, max_subset_size=.5,
                                                                 num_steps=10, num_subsets=100,
-                                                                masker=masker)["linear"])
+                                                                masker=masker)["linear"].mean(dim=-1))
                     prog.update(1)
                 prog.close()
 
-                sens_n_variances.append(torch.stack(sens_n_results, dim=1).mean(dim=-1).var(dim=-1))
-                seg_sens_n_variances.append(torch.stack(seg_sens_n_results, dim=1).mean(dim=-1).var(dim=-1))
+                sens_n_results.append(torch.stack(sens_n_batch, dim=1))
+                seg_sens_n_results.append(torch.stack(seg_sens_n_batch, dim=1))
         samples_done += samples.shape[0]
         print(f"{samples_done}/{args.num_samples}")
     
     prog.close()
-    sens_n_variances = torch.cat(sens_n_variances).numpy()
-    seg_sens_n_variances = torch.cat(seg_sens_n_variances).numpy()
+    sens_n_results = torch.cat(sens_n_results).numpy()
+    seg_sens_n_results = torch.cat(seg_sens_n_results).numpy()
 
-    df = pd.DataFrame({"sens_n": sens_n_variances, "seg_sens_n": seg_sens_n_variances})
-    df.to_csv(args.out_file, index=False)
+    np.savetxt(path.join(args.out_dir, "sens_n.csv"), sens_n_results, delimiter=",")
+    np.savetxt(path.join(args.out_dir, "seg_sens_n.csv"), seg_sens_n_results, delimiter=",")
