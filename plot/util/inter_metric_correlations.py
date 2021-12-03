@@ -3,7 +3,7 @@ from util.dfs import get_default_dfs, get_all_dfs
 
 
 def inter_metric_correlations(res_obj, metric_selection="default"):
-    if all:
+    if metric_selection == all:
         dfs = get_all_dfs(res_obj, mode="raw")
     else:
         dfs = get_default_dfs(res_obj, mode="raw")
