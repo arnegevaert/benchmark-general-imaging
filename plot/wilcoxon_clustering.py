@@ -39,5 +39,5 @@ if __name__ == "__main__":
         effect_sizes = effect_sizes / effect_sizes.max()
         effect_sizes = effect_sizes.fillna(0)
 
-        fig = sns.clustermap(effect_sizes.transpose(), row_cluster=False, cmap="Greens")
+        fig = sns.clustermap(effect_sizes.transpose(), row_cluster=False, cmap="Greens", figsize=(7,7), method="single", metric="correlation")
         fig.savefig(os.path.join(args.out_dir, f"{ds_name}.png"), bbox_inches="tight", dpi=250)

@@ -19,19 +19,19 @@ METRICS = {
 }
 
 METHODS = {
-    "Gradient": "Grad",
-    "InputXGradient": "IxG",
-    "Deconvolution": "Dec",
-    "GuidedBackprop": "GBP",
-    "DeepLift": "DL",
-    "GradCAM": "GC",
-    "GuidedGradCAM": "GGC",
-    "IntegratedGradients": "IG",
-    "ExpectedGradients": "EG",
-    "SmoothGrad": "SG",
-    "VarGrad": "VG",
-    "DeepShap": "DS",
-    "KernelShap": "KS",
+    "Gradient": "Gradient",
+    "InputXGradient": "InputXGradient",
+    "Deconvolution": "Deconvolution",
+    "GuidedBackprop": "GuidedBackprop",
+    "DeepLift": "DeepLIFT",
+    "GradCAM": "GradCAM",
+    "GuidedGradCAM": "GuidedGradCAM",
+    "IntegratedGradients": "IntegratedGradients",
+    "ExpectedGradients": "ExpectedGradients",
+    "SmoothGrad": "SmoothGrad",
+    "VarGrad": "VarGrad",
+    "DeepShap": "DeepSHAP",
+    "KernelShap": "KernelSHAP",
     "LIME": "LIME"
 }
 
@@ -44,7 +44,7 @@ def _translate(dfs):
         for alt_key in METRICS:
             if key.startswith(alt_key):
                 new_key = key.replace(alt_key, METRICS[alt_key])
-        #df = df.rename(columns=METHODS)
+        df = df.rename(columns=METHODS)
         res[new_key] = (df, inverted)
     return res
 

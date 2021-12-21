@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # PAIRWISE TESTS #
     ##################
     for ds_name in tqdm(["mnist", "cifar10", "imagenet"]):
-        fig = pairwise_tests(result_objects[ds_name], "DeepShap", "DeepLift", title="P(DeepShap > DeepLift)")
+        fig = pairwise_tests(result_objects[ds_name], "DeepSHAP", "DeepLIFT", title="P(DeepSHAP > DeepLIFT)")
         fig.savefig(os.path.join(args.out_dir, f"cles_{ds_name}.png"), bbox_inches="tight", dpi=250)
         plt.close(fig)
 
