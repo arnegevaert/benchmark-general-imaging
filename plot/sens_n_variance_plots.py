@@ -59,4 +59,5 @@ if __name__ == "__main__":
 
     p = sns.barplot(x="Dataset", hue="Metric", y="Noise % var", data=var_df, ax=axs[1])
     p.set_xticklabels(p.get_xticklabels(), rotation=30)
-    fig.savefig(args.out_file, bbox_inches="tight", dpi=250)
+    #fig.savefig(args.out_file, bbox_inches="tight", dpi=250)
+    fig.savefig(args.out_file, bbox_inches="tight")
