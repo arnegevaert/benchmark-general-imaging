@@ -34,7 +34,8 @@ if __name__ == "__main__":
     k_a = compute_krippendorff_alpha(result_object, metric_selection="all")
     k_a = k_a.to_frame("alpha")
     fig = plot_krippendorff_alpha(k_a, color_thresh=threshold, legend=False)
-    fig.savefig(os.path.join(args.out_dir, "krip_bar.png"), bbox_inches="tight", dpi=250)
+    #fig.savefig(os.path.join(args.out_dir, "krip_bar.png"), bbox_inches="tight", dpi=250)
+    fig.savefig(os.path.join(args.out_dir, "krip_bar.svg"), bbox_inches="tight")
 
     ##########################################
     # STEP 2: PLOT INTER-METRIC CORRELATIONS #
@@ -74,7 +75,8 @@ if __name__ == "__main__":
     ax = fig.axes[0]
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor", fontsize=fontsize)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=fontsize)
-    fig.savefig(os.path.join(args.out_dir, "metric_corr.png"), bbox_inches="tight", dpi=250)
+    #fig.savefig(os.path.join(args.out_dir, "metric_corr.png"), bbox_inches="tight", dpi=250)
+    fig.savefig(os.path.join(args.out_dir, "metric_corr.svg"), bbox_inches="tight")
 
     selected_metrics = {
         "Cov": mr["impact_coverage"].get_df(mode="raw"),
@@ -91,7 +93,8 @@ if __name__ == "__main__":
     ax = fig.axes[0]
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor", fontsize=fontsize)
     ax.set_yticklabels(ax.get_yticklabels(), fontsize=fontsize)
-    fig.savefig(os.path.join(args.out_dir, "metric_corr_selected.png"), bbox_inches="tight", dpi=250)
+    #fig.savefig(os.path.join(args.out_dir, "metric_corr_selected.png"), bbox_inches="tight", dpi=250)
+    fig.savefig(os.path.join(args.out_dir, "metric_corr_selected.svg"), bbox_inches="tight")
 
     #################################################################
     # STEP 3: WILCOXON SIGNED RANK TESTS ON LARGE AMOUNT OF SAMPLES #
@@ -111,7 +114,8 @@ if __name__ == "__main__":
     order = ["DeepShap", "ExpectedGradients", "DeepLift", "GradCAM", "KernelShap", "LIME", "SmoothGrad", "VarGrad",
              "IntegratedGradients", "InputXGradient", "Gradient", "GuidedBackprop", "GuidedGradCAM", "Deconvolution"]
     fig = WilcoxonSummaryPlot(dfs).render(figsize=(8, 8), glyph_scale=800, fontsize=fontsize, method_order=order)
-    fig.savefig(os.path.join(args.out_dir, "wilcoxon.png"), bbox_inches="tight", dpi=250)
+    #fig.savefig(os.path.join(args.out_dir, "wilcoxon.png"), bbox_inches="tight", dpi=250)
+    fig.savefig(os.path.join(args.out_dir, "wilcoxon.svg"), bbox_inches="tight")
 
     ####################################################
     # STEP 4: PAIRWISE COMPARISON BETWEEN BEST METHODS #
@@ -134,4 +138,5 @@ if __name__ == "__main__":
         sns.barplot(data=df, x="CLES", y="Metric", color="b", left=0.5, ax=ax)
         ax.set(xlim=(0, 1))
         ax.set_title(f"P({m1} > {m2})")
-        fig.savefig(os.path.join(args.out_dir, f"cles_{m1}_{m2}.png"), bbox_inches="tight", dpi=250)
+        #fig.savefig(os.path.join(args.out_dir, f"cles_{m1}_{m2}.png"), bbox_inches="tight", dpi=250)
+        fig.savefig(os.path.join(args.out_dir, f"cles_{m1}_{m2}.svg"), bbox_inches="tight")
