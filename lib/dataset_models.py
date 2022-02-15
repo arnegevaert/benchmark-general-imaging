@@ -9,7 +9,6 @@ from lib.datasets import ImagenetDataset
 
 
 _DATA_LOC = os.environ["BM_DATA_LOC"] if "BM_DATA_LOC" in os.environ else path.join(path.dirname(__file__), "../data")
-_MODEL_LOC = os.environ["BM_MODEL_LOC"] if "BM_MODEL_LOC" in os.environ else path.join(path.dirname(__file__), "model_parameters")
 
 
 def get_dataset_model(name, model_name=None, train=False):
@@ -19,7 +18,7 @@ def get_dataset_model(name, model_name=None, train=False):
             transforms.Normalize((0.1307,), (0.3081,))
         ])
         ds = datasets.MNIST(path.join(_DATA_LOC, "MNIST"), train=train, transform=transform, download=True)
-        model = BasicCNN(10, path.join(_MODEL_LOC, "models/MNIST/cnn.pt"))
+        model = BasicCNN(10, path.join(_DATA_LOC, "models/MNIST/cnn.pt"))
         patch_folder = None
     elif name == "FashionMNIST":
         transform = transforms.Compose([
