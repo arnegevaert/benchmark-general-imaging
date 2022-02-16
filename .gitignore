@@ -1,7 +1,7 @@
 *.png
 data/*
-#!data/models
-#!data/patches
+!data/models
+!data/patches
 .idea
 .vscode
 
