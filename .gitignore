@@ -1,10 +1,8 @@
-*.h5
 *.png
 data/*
 #!data/models
 #!data/patches
 .idea
-out/
 .vscode
 
 
