@@ -1,9 +1,8 @@
 *.png
 data/*
-!data/models
-!data/patches
 .idea
 .vscode
+out/
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
