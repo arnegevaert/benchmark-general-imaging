@@ -1,4 +1,7 @@
 import zipfile
+from tqdm import tqdm
+import sys
+import tarfile
 import requests
 from io import BytesIO
 import os
@@ -8,12 +11,38 @@ from torchvision import datasets, transforms
 _ALL_DATASETS = ["MNIST", "FashionMNIST", "CIFAR-10", "CIFAR-100", "SVHN", "ImageNet", "Places-365", "Caltech-256"]
 
 
-def download_zip(name, url):
-    print(f"Downloading {name}...")
-    req = requests.get(url)
-    print("Download completed")
+def download_url(name, url):
+    filesize = int(requests.head(url).headers["Content-Length"])
+    result = BytesIO()
+
+    with requests.get(url, stream=True) as req, tqdm(
+        unit="B",  # unit string to be displayed.
+        unit_scale=True,  # let tqdm to determine the scale in kilo, mega..etc.
+        unit_divisor=1024,  # is used when unit_scale is true
+        total=filesize,  # the total iteration.
+        file=sys.stdout,  # default goes to stderr, this is the display on console.
+        desc=name  # prefix to be displayed on progress bar.
+        ) as prog:
+        for chunk in req.iter_content(chunk_size=1024):
+            result.write(chunk)
+            prog.update(1024)
+        return result
+
+
+def download_tgz(name, url):
+    #file = tarfile.open(fileobj=download_url(name, url))
+    #file.extractall()
+    binary_obj = download_url(name, url)
+    with open(f"./data/{name}.tgz", "wb") as outfile:
+        outfile.write(binary_obj.getbuffer())
+    with tarfile.open(f"./data/{name}.tgz") as file:
+        file.extractall(f"./data/{name}")
+    os.remove(f"./data/{name}.tgz")
     
-    file = zipfile.ZipFile(BytesIO(req.content))
+
+
+def download_zip(name, url):
+    file = zipfile.ZipFile(download_url(name, url))
     file.extractall(f"./data/{name}")
 
 
@@ -23,11 +52,8 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--patches", action="store_true")
     parser.add_argument("-m", "--models", action="store_true")
     parser.add_argument("-r", "--results", action="store_true")
-    parser.add_argument("-d", "--datasets", nargs="*", choices=_ALL_DATASETS)
+    parser.add_argument("-d", "--datasets", nargs="*", choices=_ALL_DATASETS, default=[])
     args = parser.parse_args()
-
-    if len(args.datasets) == 0:
-        args.datasets = _ALL_DATASETS
 
     if not os.path.exists("./data"):
         os.makedirs("./data")
@@ -79,7 +105,7 @@ if __name__ == "__main__":
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
         ])
-        #TODO download and extract tgz file from github
+        download_tgz("ImageNet", "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz")
     if args.all or "Places-365" in args.datasets:
         transform = transforms.Compose([
             transforms.Resize((256, 256)),
