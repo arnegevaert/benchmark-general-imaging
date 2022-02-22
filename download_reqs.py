@@ -38,12 +38,13 @@ def download_tgz(name, url):
     with tarfile.open(f"./data/{name}.tgz") as file:
         file.extractall(f"./data/{name}")
     os.remove(f"./data/{name}.tgz")
-    
 
 
-def download_zip(name, url):
+def download_zip(name, url, dest=None):
+    if dest is None:
+        dest = f"./data/{name}"
     file = zipfile.ZipFile(download_url(name, url))
-    file.extractall(f"./data/{name}")
+    file.extractall(dest)
 
 
 if __name__ == "__main__":
@@ -113,11 +114,11 @@ if __name__ == "__main__":
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-        ds = datasets.Places365(os.path.join("data", 'Places365'), split="val", transform=transform, small=True, download=True)
+        download_zip("Places365", "https://zenodo.org/record/6221586/files/places365.zip?download=1", dest="./data")
     if args.all or "Caltech-256" in args.datasets:
         transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize([0.552, 0.5332, 0.5047], [0.3154, 0.312, 0.3256])
         ])
-        #TODO check if downloading from pytorch gives the same result
+        download_zip("Caltech256", "https://zenodo.org/record/6221586/files/caltech256.zip?download=1", dest="./data")
