@@ -64,7 +64,6 @@ We provide 2 configuration files for the benchmark: `config/suite.yaml` and `con
 `config/methods.yaml` contains the configuration for attribution methods. This file can be modified to remove/add attribution methods, or change their hyperparameters.
 
 ### 5. Analyse results
-
 To generate all plots from the paper, three scripts are used. These examples assume that the `.h5` files with the results are stored in the `out/` directory.
 1. To produce the general plots: `python plot/general_plots.py out/ plot/out`
 2. To produce the plots that compare the SNR and variance of Sensitivity-n and SegSensitivity-n: `python plot/sens_n_variance_plots.py out/ plot/out/sens_n.png`

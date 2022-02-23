@@ -1,6 +1,6 @@
 import argparse
 import torch
-from experiments.general_imaging.lib.dataset_models import get_dataset_model
+from lib.dataset_models import get_dataset_model
 from attrbench.suite import SuiteResult
 from os import path
 import numpy as np
