@@ -53,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--patches", action="store_true")
     parser.add_argument("-m", "--models", action="store_true")
     parser.add_argument("-r", "--results", action="store_true")
-    parser.add_argument("-d", "--datasets", nargs="*", choices=_ALL_DATASETS, default=[])
+    parser.add_argument("-d", "--datasets", nargs="*", choices=_ALL_DATASETS + ["all"], default=[])
     args = parser.parse_args()
 
     if not os.path.exists("./data"):
@@ -66,6 +66,10 @@ if __name__ == "__main__":
         download_zip("patches", "https://zenodo.org/record/6205531/files/patches.zip?download=1")
     if args.all or args.results:
         download_zip("results", "https://zenodo.org/record/6205531/files/results.zip?download=1")
+
+    # Users can specify "-d all" to download all datasets (without downloading patches, models or results)
+    if "all" in args.datasets:
+        args.datasets = _ALL_DATASETS
 
     # Download datasets using Pytorch
     if args.all or "MNIST" in args.datasets:
