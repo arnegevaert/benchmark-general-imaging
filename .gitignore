@@ -1,6 +1,7 @@
 Session.vim
 *.png
 data/*
+!data/imagenet_classes.txt
 .idea
 .vscode
 out/
