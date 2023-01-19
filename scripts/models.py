@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models.resnet import resnet18
-from torchvision.models.utils import load_state_dict_from_url
+from torch.hub import load_state_dict_from_url
+
 
 model_urls = {
     'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
@@ -15,6 +15,46 @@ model_urls = {
     'wide_resnet50_2': 'https://download.pytorch.org/models/wide_resnet50_2-95faca4d.pth',
     'wide_resnet101_2': 'https://download.pytorch.org/models/wide_resnet101_2-32ee1156.pth',
 }
+
+
+class BasicCNN(nn.Module):
+    """
+    Basic convolutional network for MNIST
+    """
+    def __init__(self, num_classes, params_loc=None):
+        super(BasicCNN, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv2 = nn.Conv2d(32, 64, 3, 1)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(9216, 128)
+        self.fc2 = nn.Linear(128, num_classes)
+        self.relu1 = nn.ReLU()
+        self.relu2 = nn.ReLU()
+        if params_loc:
+            # map_location allows taking a model trained on GPU and loading it on CPU
+            # without it, a model trained on GPU will be loaded in GPU even if DEVICE is CPU
+            self.load_state_dict(torch.load(params_loc, map_location=lambda storage, loc: storage))
+
+    def forward(self, x):
+        if type(x) != torch.Tensor:
+            x = torch.tensor(x)
+        if x.dtype != torch.float32:
+            x = x.float()
+
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.conv2(x)
+        x = F.max_pool2d(x, 2)
+        x = self.dropout1(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = self.relu2(x)
+        x = self.dropout2(x)
+        return self.fc2(x)
+
+    def get_last_conv_layer(self):
+        return self.conv2
 
 
 class LambdaLayer(nn.Module):

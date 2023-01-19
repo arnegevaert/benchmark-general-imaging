@@ -1,8 +1,8 @@
 import argparse
 import torch
 from torch.utils.data import DataLoader, TensorDataset
-from lib.dataset_models import get_dataset_model
-from lib import MethodLoader
+from .util.dataset_models import get_dataset_model
+from .util import MethodLoader
 from attrbench.suite import Suite, MetricLoader, SuiteResult
 import logging
 
