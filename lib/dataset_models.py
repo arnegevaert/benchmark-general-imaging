@@ -79,7 +79,7 @@ def get_dataset_model(name, model_name=None, train=False):
                                  std=[0.229, 0.224, 0.225])
         ])
         dir = "train" if train else "val"
-        ds = ImagenetDataset(path.join(_DATA_LOC, "imagenette2", dir), transform=transform)
+        ds = ImagenetDataset(path.join(_DATA_LOC, "ImageNet", "imagenette2", dir), transform=transform)
         if model_name.lower() == 'resnet18':
             model = Resnet18(1000, pretrained=True)
         elif model_name.lower() == 'resnet50':

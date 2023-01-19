@@ -45,16 +45,16 @@ For more information, run `python train_patches.py -h`.
 (venv) $ python download_reqs.py -r
 ```
 
-To run the benchmark on a given dataset, use the `run_benchmark.py` script. This script requires 2 configuration files: one file specifying the metrics that need to be run (this configuration is passed to the `attrbench` dependency package), and another specifying the attribution methods that need to be tested (this configuration is processed directly). The following commands can be used to run the full benchmark on all datasets from the original publication, for 256 samples using a batch size of 64:
+To run the general benchmark on a given dataset, use the `run_benchmark.py` script. This script requires 2 configuration files: one file specifying the metrics that need to be run (this configuration is passed to the `attrbench` dependency package), and another specifying the attribution methods that need to be tested (this configuration is processed directly). The following commands can be used to run the full benchmark on all datasets from the original publication, for 256 samples using a batch size of 64:
 ```bash
-python run_benchmark.py -d ImageNet -m resnet18 -b 64 -n 256 -ci -o imagenet.h5 config/suite.yaml config/methods.yaml
-python run_benchmark.py -d Caltech256 -m resnet18 -b 64 -n 256 -ci -o caltech.h5 config/suite.yaml config/methods.yaml
-python run_benchmark.py -d Places365 -m resnet18 -b 64 -n 256 -ci -o places.h5 config/suite.yaml config/methods.yaml
-python run_benchmark.py -d MNIST -m CNN -b 64 -n 256 -ci -o mnist.h5 config/suite_no_ic.yaml config/methods.yaml
-python run_benchmark.py -d FashionMNIST -m CNN -b 64 -n 256 -ci -o fashionmnist.h5 config/suite_no_ic.yaml config/methods.yaml
-python run_benchmark.py -d SVHN -m resnet20 -b 64 -n 256 -ci -o svhn.h5 config/suite_no_ic.yaml config/methods.yaml
-python run_benchmark.py -d CIFAR10 -m resnet20 -b 64 -n 256 -ci -o cifar10.h5 config/suite_no_ic.yaml config/methods.yaml
-python run_benchmark.py -d CIFAR100 -m resnet20 -b 64 -n 256 -ci -o cifar100.h5 config/suite_no_ic.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d ImageNet -m resnet18 -b 64 -n 256 -ci -o imagenet.h5 config/suite.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d Caltech256 -m resnet18 -b 64 -n 256 -ci -o caltech.h5 config/suite.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d Places365 -m resnet18 -b 64 -n 256 -ci -o places.h5 config/suite.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d MNIST -m CNN -b 64 -n 256 -ci -o mnist.h5 config/suite_no_ic.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d FashionMNIST -m CNN -b 64 -n 256 -ci -o fashionmnist.h5 config/suite_no_ic.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d SVHN -m resnet20 -b 64 -n 256 -ci -o svhn.h5 config/suite_no_ic.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d CIFAR10 -m resnet20 -b 64 -n 256 -ci -o cifar10.h5 config/suite_no_ic.yaml config/methods.yaml
+(venv) $ python run_benchmark.py -d CIFAR100 -m resnet20 -b 64 -n 256 -ci -o cifar100.h5 config/suite_no_ic.yaml config/methods.yaml
 ```
 
 For more info on the arguments for the `run_benchmark.py` script, run `python run_benchmark.py -h`.
@@ -62,6 +62,11 @@ For more info on the arguments for the `run_benchmark.py` script, run `python ru
 We provide 2 configuration files for the benchmark: `config/suite.yaml` and `config/suite_no_ic.yaml`. These files are exactly the same, except that `config/suite_no_ic.yaml` will skip the Impact Coverage metric. Use this script on the low-dimensional datasets, for which adversarial patches are not available.
 
 `config/methods.yaml` contains the configuration for attribution methods. This file can be modified to remove/add attribution methods, or change their hyperparameters.
+
+To run the signal-to-noise ratio experiments for Sensitivity-n and SegSensitivity-n (see Section 7.5 of the paper), use the `sens_n_variance.py` script. For example, for the MNIST dataset (other datasets are analogous):
+```bash
+(venv) $ python sens_n_variance.py -d MNIST -m CNN -b 64 -n 256 -i 100 -o out -c
+```
 
 ### 5. Analyse results
 To generate all plots from the paper, three scripts are used. These examples assume that the `.h5` files with the results are stored in the `out/` directory.

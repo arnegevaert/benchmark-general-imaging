@@ -1,6 +1,6 @@
 import argparse
 import torch
-from experiments.general_imaging.dataset_models import get_dataset_model
+from lib import get_dataset_model
 from attrbench.lib import make_patch
 from torch.utils.data import DataLoader
 from os import path
