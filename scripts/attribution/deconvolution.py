@@ -1,9 +1,13 @@
 from captum import attr
+from torch import nn
+import torch
+from attrbench import AttributionMethod
 
 
-class Deconvolution:
-    def __init__(self, model):
+class Deconvolution(AttributionMethod):
+    def __init__(self, model: nn.Module):
         self.method = attr.Deconvolution(model)
 
-    def __call__(self, x, target):
-        return self.method.attribute(x, target=target)
+    def __call__(self, batch_x: torch.Tensor,
+                 batch_target: torch.Tensor) -> torch.Tensor:
+        return self.method.attribute(batch_x, target=batch_target)

@@ -1,9 +1,11 @@
 import torch
 from skimage.filters import sobel
+import torch
+from attrbench import AttributionMethod
 
 
-class EdgeDetection:
-    def __call__(self, x, target):
+class EdgeDetection(AttributionMethod):
+    def __call__(self, x: torch.Tensor, batch_target: torch.Tensor):
         device = x.device
         x = x.detach().cpu().numpy()
         x = (x - x.min()) / (x.max() - x.min())

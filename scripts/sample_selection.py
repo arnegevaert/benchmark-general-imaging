@@ -183,12 +183,12 @@ def get_dataset_model(data_dir: str, dataset_name: str,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("num_samples", type=int)
-    parser.add_argument("dataset", type=str, choices=_DATASETS)
-    parser.add_argument("data_dir", type=str)
-    parser.add_argument("batch_size", type=int)
-    parser.add_argument("output_file", type=str)
-    parser.add_argument("--model", type=str, nargs="?")
+    parser.add_argument("-n", "--num-samples", type=int)
+    parser.add_argument("-d" "--dataset", type=str, choices=_DATASETS)
+    parser.add_argument("-b", "--batch-size", type=int)
+    parser.add_argument("-o", "--output-file", type=str)
+    parser.add_argument("-m", "--model", type=str, nargs="?")
+    parser.add_argument("--data-dir", type=str)
     parser.add_argument("--allow-overwrite", action="store_true")
     args = parser.parse_args()
 
