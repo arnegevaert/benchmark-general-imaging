@@ -1,7 +1,11 @@
-*.h5
+Session.vim
 *.png
-data
+data/*
+!data/imagenet_classes.txt
 .idea
+.vscode
+out/
+*.zip
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python

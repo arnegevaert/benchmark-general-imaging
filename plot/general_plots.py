@@ -46,36 +46,40 @@ if __name__ == "__main__":
         }
         k_a = pd.DataFrame(k_a)
         fig = plot_krippendorff_alpha(k_a, ["#036d08", "#9de78c", "#08036d", "#845eb3", "#e7c3ff", "#6d012a", "#b65a73", "#ffaac4"])
-        fig.savefig(os.path.join(args.out_dir, f"krip_bar_{metric_selection}.png"), bbox_inches="tight", dpi=250)
+        #fig.savefig(os.path.join(args.out_dir, f"krip_bar_{metric_selection}.png"), bbox_inches="tight", dpi=250)
+        fig.savefig(os.path.join(args.out_dir, f"krip_bar_{metric_selection}.svg"), bbox_inches="tight")
     sns.reset_orig()
 
     ############
     # WILCOXON #
     ############
     for metric_selection in ("default", "all"):
-        _create_out_dir(f"wilcoxon_{metric_selection}")
+        _create_out_dir(f"wilcoxon")
         for ds_name, res_obj in tqdm(result_objects.items()):
             fig = wilcoxon(res_obj, metric_selection)
-            fig.savefig(os.path.join(args.out_dir, f"wilcoxon_{metric_selection}", f"{ds_name}.png"), bbox_inches="tight", dpi=250)
+            #fig.savefig(os.path.join(args.out_dir, f"wilcoxon_{metric_selection}", f"{ds_name}.png"), bbox_inches="tight", dpi=250)
+            fig.savefig(os.path.join(args.out_dir, f"wilcoxon", f"{ds_name}_{metric_selection}.svg"), bbox_inches="tight")
             plt.close(fig)
 
     #############################
     # INTER-METRIC CORRELATIONS #
     #############################
     for metric_selection in ("default", "all"):
-        _create_out_dir(f"metric_corr_{metric_selection}")
+        _create_out_dir(f"metric_corr")
         for ds_name, res_obj in tqdm(result_objects.items()):
             fig = inter_metric_correlations(res_obj, metric_selection=metric_selection)
-            fig.savefig(os.path.join(args.out_dir, f"metric_corr_{metric_selection}", f"{ds_name}.png"),
-                        bbox_inches="tight", dpi=250)
+            #fig.savefig(os.path.join(args.out_dir, f"metric_corr_{metric_selection}", f"{ds_name}.png"), bbox_inches="tight", dpi=250)
+            fig.savefig(os.path.join(args.out_dir, f"metric_corr", f"{ds_name}_{metric_selection}.svg"),
+                        bbox_inches="tight")
             plt.close(fig)
 
     ##################
     # PAIRWISE TESTS #
     ##################
     for ds_name in tqdm(["mnist", "cifar10", "imagenet"]):
-        fig = pairwise_tests(result_objects[ds_name], "DeepShap", "DeepLift")
-        fig.savefig(os.path.join(args.out_dir, f"cles_{ds_name}.png"), bbox_inches="tight", dpi=250)
+        fig = pairwise_tests(result_objects[ds_name], "DeepSHAP", "DeepLIFT", title="P(DeepSHAP > DeepLIFT)")
+        #fig.savefig(os.path.join(args.out_dir, f"cles_{ds_name}.png"), bbox_inches="tight", dpi=250)
+        fig.savefig(os.path.join(args.out_dir, f"cles_{ds_name}.svg"), bbox_inches="tight")
         plt.close(fig)
 
     ##################################
@@ -93,7 +97,8 @@ if __name__ == "__main__":
                 masker=masker, activation_fn="linear", mode="raw", normalize=True)
 
         fig = InterMetricCorrelationPlot(dfs).render(figsize=(2,2))
-        fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{metric_name}.png"), bbox_inches="tight", dpi=250)
+        #fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{metric_name}.png"), bbox_inches="tight", dpi=250)
+        fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{metric_name}.svg"), bbox_inches="tight")
         plt.close(fig)
         prog.update(1)
 
@@ -109,6 +114,7 @@ if __name__ == "__main__":
                     masker=masker, activation_fn="linear", mode="raw")
 
             fig = InterMetricCorrelationPlot(dfs).render(figsize=(2, 2))
-            fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{ds_name}_{metric_name}.png"), bbox_inches="tight", dpi=250)
+            #fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{ds_name}_{metric_name}.png"), bbox_inches="tight", dpi=250)
+            fig.savefig(os.path.join(args.out_dir, "metric_corr_masking", f"{ds_name}_{metric_name}.svg"), bbox_inches="tight")
             plt.close(fig)
             prog.update(1)
