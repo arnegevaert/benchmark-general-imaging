@@ -34,13 +34,13 @@ class TabularLime:
 
 
 class KernelShap:
-    def __init__(self, model, n_samples, super_pixels=True, n_segments=None, feature_mask=None, baselines=None):
-        if super_pixels and n_samples is None:
+    def __init__(self, model, num_samples, super_pixels=True, num_segments=None, feature_mask=None, baselines=None):
+        if super_pixels and num_samples is None:
             raise ValueError(f"n_segments cannot be None when using super_pixels")
-        self.n_segments = n_segments
+        self.num_segments = num_segments
         self.super_pixels = super_pixels
         self.method = attr.KernelShap(model)
-        self.n_samples = n_samples
+        self.num_samples = num_samples
         self.feature_mask = feature_mask
         if isinstance(baselines, list):
             baselines = torch.Tensor(baselines)[None]
@@ -50,14 +50,14 @@ class KernelShap:
         if self.feature_mask is not None:
             masks = self.feature_mask
         else:
-            masks = get_super_pixels(x, self.n_segments) if self.super_pixels else None
+            masks = get_super_pixels(x, self.num_segments) if self.super_pixels else None
         # Compute KernelSHAP this per-sample to avoid warnings. If we run KernelSHAP on multiple samples,
         # captum runs it per sample in a for loop anyway.
         return torch.cat([
             self.method.attribute(x[i, ...].unsqueeze(0),
                                   target=target[i],
                                   feature_mask=masks[i, ...].unsqueeze(0),
-                                  n_samples=self.n_samples)
+                                  n_samples=self.num_samples)
             for i in range(x.shape[0])], dim=0)
 
 

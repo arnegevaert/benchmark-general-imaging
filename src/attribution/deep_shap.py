@@ -8,14 +8,14 @@ from attrbench import AttributionMethod
 class DeepShap(AttributionMethod):
     def __init__(self, model: nn.Module,
                  reference_dataset: Dataset,
-                 n_baseline_samples: int):
+                 num_baseline_samples: int):
         self.model = model
         self.reference_dataset = reference_dataset
-        self.n_baseline_samples = n_baseline_samples
+        self.num_baseline_samples = num_baseline_samples
         self.method = attr.DeepLiftShap(model)
         self.ref_sampler = DataLoader(
             dataset=self.reference_dataset,
-            batch_size=self.n_baseline_samples,
+            batch_size=self.num_baseline_samples,
             shuffle=True, drop_last=True
         )
 

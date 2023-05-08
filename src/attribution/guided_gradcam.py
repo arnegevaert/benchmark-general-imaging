@@ -1,13 +1,12 @@
 from torch import nn
 from captum import attr
-from lib.attribution import GradCAM
+from attribution import GradCAM
 
 
 class GuidedGradCAM:
-    def __init__(self, model: nn.Module, last_conv_layer: nn.Module, relu_attributions=True):
-        self.gc = GradCAM(model, last_conv_layer, relu_attributions)
+    def __init__(self, model: nn.Module):
+        self.gc = GradCAM(model)
         self.gbp = attr.GuidedBackprop(model)
-        self.relu_attributions = relu_attributions
 
     def __call__(self, x, target):
         # Compute GBP attributions

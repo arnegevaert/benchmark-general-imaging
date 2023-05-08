@@ -1,3 +1,5 @@
+from os import path
+from datasets import ALL_DATASETS
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -21,6 +23,7 @@ class BasicCNN(nn.Module):
     """
     Basic convolutional network for MNIST
     """
+
     def __init__(self, num_classes, params_loc=None):
         super(BasicCNN, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
@@ -34,7 +37,8 @@ class BasicCNN(nn.Module):
         if params_loc:
             # map_location allows taking a model trained on GPU and loading it on CPU
             # without it, a model trained on GPU will be loaded in GPU even if DEVICE is CPU
-            self.load_state_dict(torch.load(params_loc, map_location=lambda storage, loc: storage))
+            self.load_state_dict(torch.load(
+                params_loc, map_location=lambda storage, loc: storage))
 
     def forward(self, x):
         if type(x) != torch.Tensor:
@@ -86,9 +90,11 @@ class BasicBlock(nn.Module):
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         if groups != 1 or base_width != 64:
-            raise ValueError('BasicBlock only supports groups=1 and base_width=64')
+            raise ValueError(
+                'BasicBlock only supports groups=1 and base_width=64')
         if dilation > 1:
-            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
+            raise NotImplementedError(
+                "Dilation > 1 not supported in BasicBlock")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
         self.bn1 = norm_layer(planes)
@@ -197,7 +203,8 @@ class ResNet(nn.Module):
                                bias=False)
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
-        if not self.small_model: self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        if not self.small_model:
+            self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
         if small_model:
             self.layer1 = self._make_layer(block, 16, layers[0])
@@ -219,7 +226,8 @@ class ResNet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                nn.init.kaiming_normal_(
+                    m.weight, mode='fan_out', nonlinearity='relu')
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -268,12 +276,14 @@ class ResNet(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        if not self.small_model: x = self.maxpool(x)
+        if not self.small_model:
+            x = self.maxpool(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        if not self.small_model: x = self.layer4(x)
+        if not self.small_model:
+            x = self.layer4(x)
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -287,9 +297,11 @@ class ResNet(nn.Module):
 
 class Resnet20(ResNet):
     def __init__(self, num_classes, params_loc=None):
-        super().__init__(BasicBlock, [3, 3, 3], num_classes=num_classes, small_model=True)
+        super().__init__(BasicBlock, [3, 3, 3],
+                         num_classes=num_classes, small_model=True)
         if params_loc:
-            state_dict = torch.load(params_loc, map_location=lambda storage, loc: storage)
+            state_dict = torch.load(
+                params_loc, map_location=lambda storage, loc: storage)
             self.load_state_dict(state_dict)
 
     def get_last_conv_layer(self) -> nn.Module:
@@ -298,9 +310,11 @@ class Resnet20(ResNet):
 
 class Resnet32(ResNet):
     def __init__(self, num_classes, params_loc=None):
-        super().__init__(BasicBlock, [5, 5, 5], num_classes=num_classes, small_model=True)
+        super().__init__(BasicBlock, [5, 5, 5],
+                         num_classes=num_classes, small_model=True)
         if params_loc:
-            state_dict = torch.load(params_loc, map_location=lambda storage, loc: storage)
+            state_dict = torch.load(
+                params_loc, map_location=lambda storage, loc: storage)
             self.load_state_dict(state_dict)
 
     def get_last_conv_layer(self) -> nn.Module:
@@ -309,9 +323,11 @@ class Resnet32(ResNet):
 
 class Resnet44(ResNet):
     def __init__(self, num_classes, params_loc=None):
-        super().__init__(BasicBlock, [7, 7, 7], num_classes=num_classes, small_model=True)
+        super().__init__(BasicBlock, [7, 7, 7],
+                         num_classes=num_classes, small_model=True)
         if params_loc:
-            state_dict = torch.load(params_loc, map_location=lambda storage, loc: storage)
+            state_dict = torch.load(
+                params_loc, map_location=lambda storage, loc: storage)
             self.load_state_dict(state_dict)
 
     def get_last_conv_layer(self) -> nn.Module:
@@ -320,9 +336,11 @@ class Resnet44(ResNet):
 
 class Resnet56(ResNet):
     def __init__(self, num_classes, params_loc=None):
-        super().__init__(BasicBlock, [9, 9, 9], num_classes=num_classes, small_model=True)
+        super().__init__(BasicBlock, [9, 9, 9],
+                         num_classes=num_classes, small_model=True)
         if params_loc:
-            state_dict = torch.load(params_loc, map_location=lambda storage, loc: storage)
+            state_dict = torch.load(
+                params_loc, map_location=lambda storage, loc: storage)
             self.load_state_dict(state_dict)
 
     def get_last_conv_layer(self) -> nn.Module:
@@ -341,7 +359,8 @@ class Resnet18_old(nn.Module):
         self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
 
         if params_loc:
-            self.model.load_state_dict(torch.load(params_loc, map_location=lambda storage, loc: storage))
+            self.model.load_state_dict(torch.load(
+                params_loc, map_location=lambda storage, loc: storage))
 
     def forward(self, x):
         return self.model(x)
@@ -363,7 +382,8 @@ class Resnet50(ResNet):
         else:
             super().__init__(Bottleneck, [3, 4, 6, 3], num_classes=num_classes)
         if params_loc:
-            self.load_state_dict(torch.load(params_loc, map_location=lambda storage, loc: storage))
+            self.load_state_dict(torch.load(
+                params_loc, map_location=lambda storage, loc: storage))
 
     def get_last_conv_layer(self):
         last_block = self.layer4[-1]  # Last BasicBlock of layer 3
@@ -382,8 +402,35 @@ class Resnet18(ResNet):
         else:
             super().__init__(BasicBlock, [2, 2, 2, 2], num_classes=num_classes)
         if params_loc:
-            self.load_state_dict(torch.load(params_loc, map_location=lambda storage, loc: storage))
+            self.load_state_dict(torch.load(
+                params_loc, map_location=lambda storage, loc: storage))
 
     def get_last_conv_layer(self):
         last_block = self.layer4[-1]  # Last BasicBlock of layer 3
         return last_block.conv2
+
+
+def get_model(dataset_name, data_dir, model_name=None):
+    assert dataset_name in ALL_DATASETS, f"Invalid dataset: {dataset_name}."
+    if dataset_name in ["MNIST", "FashionMNIST"]:
+        model_path = path.join(data_dir, f"models/{dataset_name}/cnn.pt")
+        return BasicCNN(10, model_path)
+    elif dataset_name in ["CIFAR10", "CIFAR100", "SVHN"]:
+        assert model_name.lower() in ["resnet20", "resnet56"],\
+            f"Invalid model for this dataset: {model_name}"
+        model_path = path.join(
+            data_dir, f"models/{dataset_name}/{model_name.lower()}.pt")
+        return Resnet18(10, model_path)
+    else:
+        assert model_name.lower() in ["resnet18", "resnet50"],\
+            f"Invalid model for this dataset: {model_name}"
+        model_path = path.join(
+            data_dir, f"models/{dataset_name}/{model_name.lower()}.pt")
+        n_classes = {
+            "ImageNet": 1000, "Places365": 365, "Caltech256": 267, "VOC2012": 20
+        }
+        pretrained = dataset_name == "ImageNet"
+        if model_name.lower() == "resnet18":
+            return Resnet18(n_classes[dataset_name], model_path, pretrained)
+        elif model_name.lower() == "resnet50":
+            return Resnet50(n_classes[dataset_name], model_path, pretrained)

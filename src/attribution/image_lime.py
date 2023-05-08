@@ -1,5 +1,4 @@
 from captum import attr
-import captum
 import torch
 import numpy as np
 from skimage import segmentation
@@ -7,11 +6,11 @@ import math
 
 
 class ImageLime:
-    def __init__(self, model, n_samples, n_segments):
+    def __init__(self, model, num_samples, num_segments):
         self.model = model
         self.method = None
-        self.n_samples = n_samples
-        self.n_segments = n_segments
+        self.num_samples = num_samples
+        self.num_segments = num_segments
 
     def __call__(self, x, target):
         # If this is the first call, the method hasn't been set yet.
@@ -32,7 +31,7 @@ class ImageLime:
         masks = []
         for i in range(images.shape[0]):
             img = np.transpose(images[i], (1,2,0))
-            mask = segmentation.slic(img, start_label=0, n_segments=self.n_segments)
+            mask = segmentation.slic(img, start_label=0, n_segments=self.num_segments)
             masks.append(mask)
         masks = torch.tensor(data=masks, device=x.device, dtype=torch.long)
         masks = masks.unsqueeze(dim=1).expand(-1, num_channels, -1, -1)
@@ -43,5 +42,5 @@ class ImageLime:
             self.method.attribute(x[i, ...].unsqueeze(0),
                                   target=target[i],
                                   feature_mask=masks[i, ...].unsqueeze(0),
-                                  n_samples=self.n_samples)
+                                  n_samples=self.num_samples)
             for i in range(x.shape[0])], dim=0)
