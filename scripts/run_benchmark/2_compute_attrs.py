@@ -1,9 +1,9 @@
 import argparse
-from models import get_model
-from datasets import ALL_DATASETS, get_dataset
+from util.models import get_model
+from util.datasets import ALL_DATASETS, get_dataset
 from attrbench.data import AttributionsDatasetWriter, HDF5Dataset
 from attrbench.distributed import AttributionsComputation, Model
-from attribution.method_factory import get_method_factory
+from util.attribution.method_factory import get_method_factory
 
 
 if __name__ == "__main__":

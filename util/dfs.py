@@ -49,35 +49,12 @@ def _translate(dfs):
     return res
 
 
-# Derive Deletion/Insertion from single Deletion run with full pixel range
-def _derive_del_ins(res_obj: SuiteResult, mode: str, activation_fn="linear", masker="constant", limit=50):
-    res = {}
-    res["deletion_morf"] = res_obj.metric_results["deletion_morf"].get_df(mode=mode, columns=np.arange(limit),
-                                                                          activation_fn=activation_fn, masker=masker)
-    res["deletion_lerf"] = res_obj.metric_results["deletion_lerf"].get_df(mode=mode, columns=np.arange(limit),
-                                                                          activation_fn=activation_fn, masker=masker)
-    ins_morf = res_obj.metric_results["deletion_lerf"].get_df(mode=mode, columns=np.arange(100-limit, 100),
-                                                              activation_fn=activation_fn, masker=masker)
-    res["insertion_morf"] = (ins_morf[0][::-1], ins_morf[1])
-    ins_lerf = res_obj.metric_results["deletion_morf"].get_df(mode=mode, columns=np.arange(100-limit, 100),
-                                                              activation_fn=activation_fn, masker=masker)
-    res["insertion_lerf"] = (ins_lerf[0][::-1], ins_lerf[1])
-
-    # Add IROF/IIOF
-    limit = 50
-    res["irof_morf"] = res_obj.metric_results["irof_morf"].get_df(mode=mode, columns=np.arange(limit),
-                                                                  activation_fn=activation_fn, masker=masker)
-    res["irof_lerf"] = res_obj.metric_results["irof_lerf"].get_df(mode=mode, columns=np.arange(limit),
-                                                                  activation_fn=activation_fn, masker=masker)
-    iiof_morf = res_obj.metric_results["irof_lerf"].get_df(mode=mode, columns=np.arange(100-limit, 100),
-                                                           activation_fn=activation_fn, masker=masker)
-    res["iiof_morf"] = (iiof_morf[0][::-1], iiof_morf[1])
-    iiof_lerf = res_obj.metric_results["irof_morf"].get_df(mode=mode, columns=np.arange(100-limit, 100),
-                                                           activation_fn=activation_fn, masker=masker)
-    res["iiof_lerf"] = (iiof_lerf[0][::-1], iiof_lerf[1])
+def get_default_dfs(path: str, mode: str, activation_fn="linear", 
+                    masker="constant"):
+    pass
 
 
-def get_default_dfs(res_obj: SuiteResult, mode: str, activation_fn="linear", masker="constant",
+def get_default_dfs_old(res_obj: SuiteResult, mode: str, activation_fn="linear", masker="constant",
                     include_baseline=False):
     # Add simple metrics
     res = {

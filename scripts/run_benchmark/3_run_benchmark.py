@@ -1,6 +1,7 @@
 import argparse
-from datasets import ALL_DATASETS, get_dataset
-from attribution.method_factory import get_method_factory
+from util.datasets import ALL_DATASETS, get_dataset
+from util.attribution.method_factory import get_method_factory
+from util.models import get_model
 from attrbench.data import AttributionsDataset, HDF5Dataset, IndexDataset
 from attrbench.metrics import Deletion, Irof, Infidelity, SensitivityN,\
     MinimalSubset, MaxSensitivity, ImpactCoverage
@@ -8,7 +9,6 @@ from attrbench.distributed import Model
 from attrbench.masking import ConstantMasker, RandomMasker, BlurringMasker
 from attrbench.metrics.infidelity import NoisyBaselinePerturbationGenerator,\
     GaussianPerturbationGenerator, SquarePerturbationGenerator
-from models import get_model
 import os
 
 
