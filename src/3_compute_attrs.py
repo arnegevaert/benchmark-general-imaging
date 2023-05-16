@@ -1,9 +1,9 @@
 import argparse
 from models import get_model
-from datasets import ALL_DATASETS
+from datasets import ALL_DATASETS, get_dataset
 from attrbench.data import AttributionsDatasetWriter, HDF5Dataset
 from attrbench.distributed import AttributionsComputation, Model
-from method_factory import get_method_factory
+from attribution.method_factory import get_method_factory
 
 
 if __name__ == "__main__":
@@ -18,12 +18,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     dataset = HDF5Dataset(args.samples_file)
+    reference_dataset = get_dataset(args.dataset, args.data_dir)
     writer = AttributionsDatasetWriter(
         args.output_file, num_samples=len(dataset),
         sample_shape=dataset.sample_shape)
     model = get_model(args.dataset, args.data_dir, args.model)
 
-    method_factory = get_method_factory(args.batch_size, dataset)
+    method_factory = get_method_factory(args.batch_size, 
+                                        reference_dataset=reference_dataset)
 
     computation = AttributionsComputation(Model(model), method_factory, dataset,
                                           batch_size=args.batch_size,

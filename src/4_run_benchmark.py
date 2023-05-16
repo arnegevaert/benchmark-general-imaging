@@ -1,6 +1,6 @@
 import argparse
-from datasets import ALL_DATASETS
-from method_factory import get_method_factory
+from datasets import ALL_DATASETS, get_dataset
+from attribution.method_factory import get_method_factory
 from attrbench.data import AttributionsDataset, HDF5Dataset, IndexDataset
 from attrbench.metrics import Deletion, Irof, Infidelity, SensitivityN,\
     MinimalSubset, MaxSensitivity, ImpactCoverage
@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     # Initialize dataset, model, hyperparameters
     samples_dataset = HDF5Dataset(args.samples_file)
+    reference_dataset = get_dataset(args.dataset, args.data_dir)
     attributions_dataset = AttributionsDataset(samples_dataset, 
                                   args.attrs_file,
                                   aggregate_axis=0, aggregate_method="mean")
@@ -45,7 +46,8 @@ if __name__ == "__main__":
         "blurring": BlurringMasker(feature_level="pixel",
                                    kernel_size=0.5)
         }
-    method_factory = get_method_factory(args.batch_size, samples_dataset)
+    method_factory = get_method_factory(args.batch_size,
+                                        reference_dataset=reference_dataset)
     activation_fns = ["linear", "softmax"]
 
     # Check if output directory exists and is empty

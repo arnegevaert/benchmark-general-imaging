@@ -4,7 +4,7 @@ from attribution import Deconvolution, DeepShap, DeepLift,\
     VarGrad, KernelShap, ImageLime
 from attrbench import MethodFactory
 
-def get_method_factory(batch_size, dataset):
+def get_method_factory(batch_size, reference_dataset):
     return MethodFactory({
             "Gradient": Gradient,
             "InputXGradient": InputXGradient,
@@ -18,12 +18,13 @@ def get_method_factory(batch_size, dataset):
                                     "num_steps": 25}),
             "SmoothGrad": (SmoothGrad, {"num_samples": 50, "stdev": 0.15}),
             "VarGrad": (VarGrad, {"num_samples": 50, "stdev": 0.15}),
-            "DeepShap": (DeepShap, {"reference_dataset": dataset,
+            "DeepShap": (DeepShap, {"reference_dataset": reference_dataset,
                                     "num_baseline_samples": 100}),
             "KernelSHAP": (KernelShap, {"num_segments": 50,
                                         "num_samples": 300,
                                         "super_pixels": True}),
-            "ExpectedGradients": (ExpectedGradients, {"reference_dataset": dataset,
-                                                    "num_samples": 100}),
+            "ExpectedGradients": (ExpectedGradients, 
+                                  {"reference_dataset": reference_dataset, 
+                                   "num_samples": 100}),
             "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300})
         })
