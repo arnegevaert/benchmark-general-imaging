@@ -1,6 +1,6 @@
 from torch import nn
 from captum import attr
-from attribution import GradCAM
+from util.attribution import GradCAM
 
 
 class GuidedGradCAM:

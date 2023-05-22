@@ -1,5 +1,5 @@
 from os import path
-from datasets import ALL_DATASETS
+from util.datasets import ALL_DATASETS
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

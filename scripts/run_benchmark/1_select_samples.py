@@ -1,5 +1,5 @@
-from models import get_model
-from datasets import get_dataset, SAMPLE_SHAPES, ALL_DATASETS
+from util.models import get_model
+from util.datasets import get_dataset, SAMPLE_SHAPES, ALL_DATASETS
 from attrbench.data import HDF5DatasetWriter
 from attrbench.distributed import SampleSelection, Model
 import argparse

@@ -1,4 +1,4 @@
-from attribution import Deconvolution, DeepShap, DeepLift,\
+from util.attribution import Deconvolution, DeepShap, DeepLift,\
     ExpectedGradients, GradCAM, Gradient, InputXGradient, GuidedBackprop,\
     Deconvolution, GuidedGradCAM, IntegratedGradients, SmoothGrad,\
     VarGrad, KernelShap, ImageLime
