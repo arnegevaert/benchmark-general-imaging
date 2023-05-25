@@ -46,22 +46,24 @@ def _rename_methods(dfs):
     return res
 
 
-def _subtract_baseline(df):
+def _subtract_baseline(df, baseline_method):
+    df = df.sub(df[baseline_method], axis=0)
+    df = df.drop(columns=[baseline_method])
     return df
 
 
-def get_dataframes(dirname, mode="default"):
+def get_dataframes(dirname, mode="default", baseline="Random"):
     if mode not in ["default", "all"]:
         raise ValueError("mode must be one of ['default', 'all']")
 
     if mode == "default":
-        return _get_default_dataframes(dirname)
+        return _get_default_dataframes(dirname, baseline)
     elif mode == "all":
         # return _get_all_dataframes(dirname)
-        return _get_default_dataframes(dirname)
+        return _get_default_dataframes(dirname, baseline)
 
 
-def _get_default_dataframes(dirname):
+def _get_default_dataframes(dirname, baseline):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
     and the values are tuples of (dataframe, higher_is_better).
@@ -88,7 +90,7 @@ def _get_default_dataframes(dirname):
                 masker="constant", activation_fn="linear"
             )
             result[METRICS[metric_name]] = (
-                _subtract_baseline(df),
+                _subtract_baseline(df, baseline),
                 higher_is_better,
             )
 
@@ -114,7 +116,10 @@ def _get_default_dataframes(dirname):
                 perturbation_generator=perturbation_generator,
             )
             metric_name = "INFD - " + abbrev
-            result[metric_name] = (_subtract_baseline(df), higher_is_better)
+            result[metric_name] = (
+                _subtract_baseline(df, baseline),
+                higher_is_better,
+            )
 
     # Add max-sensitivity (no arguments)
     if "max_sensitivity.h5" in available_files:
@@ -123,7 +128,7 @@ def _get_default_dataframes(dirname):
         )
         df, higher_is_better = max_sensitivity_object.get_df()
         result[METRICS["max_sensitivity"]] = (
-            _subtract_baseline(df),
+            _subtract_baseline(df, baseline),
             higher_is_better,
         )
 

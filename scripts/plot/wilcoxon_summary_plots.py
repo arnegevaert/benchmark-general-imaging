@@ -37,7 +37,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(args.out_dir, "wilcoxon"))
 
     for metric_selection in ("default", "all"):
-        dfs = get_dataframes(args.in_dir, metric_selection)
+        dfs = get_dataframes(args.in_dir, metric_selection, baseline="Gradient")
         fig = WilcoxonSummaryPlot(dfs).render(
             figsize=(10, 10) if metric_selection == "default" else (10, 25),
             glyph_scale=1000,
