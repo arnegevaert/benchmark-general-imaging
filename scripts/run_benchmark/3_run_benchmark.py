@@ -1,11 +1,10 @@
 import argparse
 from util.datasets import ALL_DATASETS, get_dataset
 from util.attribution.method_factory import get_method_factory
-from util.models import get_model
+from util.models import ModelFactoryImpl
 from attrbench.data import AttributionsDataset, HDF5Dataset, IndexDataset
 from attrbench.metrics import Deletion, Irof, Infidelity, SensitivityN,\
     MinimalSubset, MaxSensitivity, ImpactCoverage
-from attrbench.distributed import Model
 from attrbench.masking import ConstantMasker, RandomMasker, BlurringMasker
 from attrbench.metrics.infidelity import NoisyBaselinePerturbationGenerator,\
     GaussianPerturbationGenerator, SquarePerturbationGenerator
@@ -39,7 +38,7 @@ if __name__ == "__main__":
     attributions_dataset = AttributionsDataset(samples_dataset, 
                                   args.attrs_file,
                                   aggregate_axis=0, aggregate_method="mean")
-    model = Model(get_model(args.dataset, args.data_dir, args.model))
+    model_factory = ModelFactoryImpl(args.dataset, args.data_dir, args.model)
     maskers = {
         "constant": ConstantMasker(feature_level="pixel"),
         "random": RandomMasker(feature_level="pixel"),
@@ -69,7 +68,7 @@ if __name__ == "__main__":
         remove_if_present(["deletion_morf.h5", "deletion_lerf.h5"])
     for mode in ["morf", "lerf"]:
         print(f"Running deletion-{mode}...")
-        deletion = Deletion(model, attributions_dataset, args.batch_size,
+        deletion = Deletion(model_factory, attributions_dataset, args.batch_size,
                             maskers=maskers, activation_fns=activation_fns,
                             mode=mode, start=0., stop=0.15,
                             num_steps=100)
@@ -85,7 +84,7 @@ if __name__ == "__main__":
         remove_if_present(["insertion_morf.h5", "insertion_lerf.h5"])
     for mode in ["morf", "lerf"]:
         print(f"Running insertion-{mode}...")
-        insertion = Deletion(model, attributions_dataset, args.batch_size,
+        insertion = Deletion(model_factory, attributions_dataset, args.batch_size,
                             maskers=maskers, activation_fns=activation_fns,
                             mode=mode, start=1., stop=0.85,
                             num_steps=100)
@@ -101,7 +100,7 @@ if __name__ == "__main__":
         remove_if_present(["irof_morf.h5", "irof_lerf.h5"])
     for mode in ["morf", "lerf"]:
         print(f"Running IROF-{mode}...")
-        irof = Irof(model, attributions_dataset, args.batch_size,
+        irof = Irof(model_factory, attributions_dataset, args.batch_size,
                     maskers=maskers, activation_fns=activation_fns,
                     start=0., stop=1., num_steps=100)
         irof_output_file = os.path.join(args.output_dir, f"irof_{mode}.h5")
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     }
 
     attributions_dataset.group_attributions = True
-    infidelity = Infidelity(model, attributions_dataset, args.batch_size,
+    infidelity = Infidelity(model_factory, attributions_dataset, args.batch_size,
                             perturbation_generators=perturbation_generators,
                             num_perturbations=1000,
                             activation_fns=activation_fns)
@@ -137,7 +136,7 @@ if __name__ == "__main__":
         remove_if_present(["sens_n.h5"])
     print("Running Sensitivity-N...")
     attributions_dataset.group_attributions = True
-    sens_n = SensitivityN(model, attributions_dataset, args.batch_size,
+    sens_n = SensitivityN(model_factory, attributions_dataset, args.batch_size,
                         min_subset_size=0.1, max_subset_size=0.5,
                         num_steps=10, num_subsets=100,
                         maskers=maskers, activation_fns=activation_fns)
@@ -153,7 +152,7 @@ if __name__ == "__main__":
         remove_if_present(["seg_sens_n.h5"])
     print("Running Seg-Sensitivity-N...")
     attributions_dataset.group_attributions = True
-    seg_sens_n = SensitivityN(model, attributions_dataset, args.batch_size,
+    seg_sens_n = SensitivityN(model_factory, attributions_dataset, args.batch_size,
                         min_subset_size=0.1, max_subset_size=0.5,
                         num_steps=10, num_subsets=100, segmented=True,
                         maskers=maskers, activation_fns=activation_fns)
@@ -168,7 +167,7 @@ if __name__ == "__main__":
     if args.overwrite:
         remove_if_present(["ms_deletion.h5"])
     print("Running Minimal Subset Deletion...")
-    ms_deletion = MinimalSubset(model, attributions_dataset, args.batch_size,
+    ms_deletion = MinimalSubset(model_factory, attributions_dataset, args.batch_size,
                                 maskers=maskers, mode="deletion")
     ms_deletion_output_file = os.path.join(args.output_dir, "ms_deletion.h5")
     ms_deletion.run(result_path=ms_deletion_output_file)
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     if args.overwrite:
         remove_if_present(["ms_insertion.h5"])
     print("Running Minimal Subset Insertion...")
-    ms_insertion = MinimalSubset(model, attributions_dataset, args.batch_size,
+    ms_insertion = MinimalSubset(model_factory, attributions_dataset, args.batch_size,
                                 maskers=maskers, mode="insertion")
     ms_insertion_output_file = os.path.join(args.output_dir, "ms_insertion.h5")
     ms_insertion.run(result_path=ms_insertion_output_file)
@@ -193,7 +192,7 @@ if __name__ == "__main__":
         remove_if_present(["max_sensitivity.h5"])
     print("Running Max-Sensitivity...")
     index_dataset = IndexDataset(samples_dataset)
-    max_sensitivity = MaxSensitivity(model, index_dataset,
+    max_sensitivity = MaxSensitivity(model_factory, index_dataset,
                                      args.batch_size, method_factory,
                                      num_perturbations=50,
                                      radius=0.1)
@@ -209,7 +208,7 @@ if __name__ == "__main__":
         if args.overwrite:
             remove_if_present(["impact_coverage.h5"])
         print("Running Impact Coverage...")
-        coverage = ImpactCoverage(model, index_dataset, args.batch_size,
+        coverage = ImpactCoverage(model_factory, index_dataset, args.batch_size,
                                   method_factory, args.patch_folder)
         coverage_output_file = os.path.join(args.output_dir,
                                             "impact_coverage.h5")

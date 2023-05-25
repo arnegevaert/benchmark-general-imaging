@@ -1,15 +1,16 @@
 import argparse
-from util.models import get_model
+from util.models import ModelFactoryImpl
 from util.datasets import ALL_DATASETS, get_dataset
 from attrbench.data import AttributionsDatasetWriter, HDF5Dataset
-from attrbench.distributed import AttributionsComputation, Model
+from attrbench.distributed import AttributionsComputation
 from util.attribution.method_factory import get_method_factory
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="MNIST",
-                        choices=ALL_DATASETS)
+    parser.add_argument(
+        "--dataset", type=str, default="MNIST", choices=ALL_DATASETS
+    )
     parser.add_argument("--samples-file", type=str, default="samples.h5")
     parser.add_argument("--model", type=str, default="BasicCNN")
     parser.add_argument("--data-dir", type=str, default="data")
@@ -20,14 +21,21 @@ if __name__ == "__main__":
     dataset = HDF5Dataset(args.samples_file)
     reference_dataset = get_dataset(args.dataset, args.data_dir)
     writer = AttributionsDatasetWriter(
-        args.output_file, num_samples=len(dataset),
-        sample_shape=dataset.sample_shape)
-    model = get_model(args.dataset, args.data_dir, args.model)
+        args.output_file,
+        num_samples=len(dataset),
+        sample_shape=dataset.sample_shape,
+    )
+    model_factory = ModelFactoryImpl(args.dataset, args.data_dir, args.model)
 
-    method_factory = get_method_factory(args.batch_size, 
-                                        reference_dataset=reference_dataset)
+    method_factory = get_method_factory(
+        args.batch_size, reference_dataset=reference_dataset
+    )
 
-    computation = AttributionsComputation(Model(model), method_factory, dataset,
-                                          batch_size=args.batch_size,
-                                          writer=writer)
+    computation = AttributionsComputation(
+        model_factory,
+        method_factory,
+        dataset,
+        batch_size=args.batch_size,
+        writer=writer,
+    )
     computation.run()

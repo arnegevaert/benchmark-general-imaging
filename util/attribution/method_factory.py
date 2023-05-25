@@ -1,7 +1,7 @@
 from util.attribution import Deconvolution, DeepShap, DeepLift,\
     ExpectedGradients, GradCAM, Gradient, InputXGradient, GuidedBackprop,\
     Deconvolution, GuidedGradCAM, IntegratedGradients, SmoothGrad,\
-    VarGrad, KernelShap, ImageLime
+    VarGrad, KernelShap, ImageLime, Random
 from attrbench import MethodFactory
 
 def get_method_factory(batch_size, reference_dataset):
@@ -26,5 +26,6 @@ def get_method_factory(batch_size, reference_dataset):
             "ExpectedGradients": (ExpectedGradients, 
                                   {"reference_dataset": reference_dataset, 
                                    "num_samples": 100}),
-            "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300})
+            "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300}),
+            "Random": Random,
         })
