@@ -102,7 +102,7 @@ if __name__ == "__main__":
         print(f"Running IROF-{mode}...")
         irof = Irof(model_factory, attributions_dataset, args.batch_size,
                     maskers=maskers, activation_fns=activation_fns,
-                    start=0., stop=1., num_steps=100)
+                    start=0., stop=1., num_steps=100, mode=mode)
         irof_output_file = os.path.join(args.output_dir, f"irof_{mode}.h5")
         irof.run(result_path=irof_output_file)
         print()

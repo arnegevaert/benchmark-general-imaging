@@ -4,19 +4,19 @@ from typing import Dict, Tuple
 import os
 
 METRICS = {
-    "deletion_morf": "Del - MoRF",
-    "insertion_morf": "Ins - MoRF",
-    "deletion_lerf": "Del - LeRF",
-    "insertion_lerf": "Ins - LeRF",
-    "ms_insertion": "MSIns",
+    "impact_coverage": "Cov",
     "ms_deletion": "MSDel",
-    "irof_morf": "IROF - MoRF",
-    "irof_lerf": "IROF - LeRF",
+    "ms_insertion": "MSIns",
     "sens_n": "SensN",
     "seg_sens_n": "SegSensN",
-    "infidelity": "INFD",
     "max_sensitivity": "MaxSens",
-    "impact_coverage": "Cov",
+    "deletion_morf": "Del - MoRF",
+    "deletion_lerf": "Del - LeRF",
+    "insertion_morf": "Ins - MoRF",
+    "insertion_lerf": "Ins - LeRF",
+    "irof_morf": "IROF - MoRF",
+    "irof_lerf": "IROF - LeRF",
+    "infidelity": "INFD",
 }
 
 METHODS = {
@@ -52,7 +52,7 @@ def _subtract_baseline(df, baseline_method):
     return df
 
 
-def get_dataframes(dirname, mode="default", baseline="Random"):
+def get_dataframes(dirname, mode="default", baseline=None):
     if mode not in ["default", "all"]:
         raise ValueError("mode must be one of ['default', 'all']")
 
@@ -90,7 +90,9 @@ def _get_default_dataframes(dirname, baseline):
                 masker="constant", activation_fn="linear"
             )
             result[METRICS[metric_name]] = (
-                _subtract_baseline(df, baseline),
+                _subtract_baseline(df, baseline)
+                if baseline is not None
+                else df,
                 higher_is_better,
             )
 
@@ -101,7 +103,9 @@ def _get_default_dataframes(dirname, baseline):
             result_object = MetricResult.load(os.path.join(dirname, filename))
             df, higher_is_better = result_object.get_df(masker="constant")
             result[METRICS[metric_name]] = (
-                _subtract_baseline(df, baseline),
+                _subtract_baseline(df, baseline)
+                if baseline is not None
+                else df,
                 higher_is_better,
             )
 
@@ -120,7 +124,9 @@ def _get_default_dataframes(dirname, baseline):
             )
             metric_name = "INFD - " + abbrev
             result[metric_name] = (
-                _subtract_baseline(df, baseline),
+                _subtract_baseline(df, baseline)
+                if baseline is not None
+                else df,
                 higher_is_better,
             )
 
@@ -131,7 +137,7 @@ def _get_default_dataframes(dirname, baseline):
         )
         df, higher_is_better = max_sensitivity_object.get_df()
         result[METRICS["max_sensitivity"]] = (
-            _subtract_baseline(df, baseline),
+            _subtract_baseline(df, baseline) if baseline is not None else df,
             higher_is_better,
         )
 
