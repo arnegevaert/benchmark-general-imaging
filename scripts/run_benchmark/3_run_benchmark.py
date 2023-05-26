@@ -5,6 +5,7 @@ from util.models import ModelFactoryImpl
 from attrbench.data import AttributionsDataset, HDF5Dataset, IndexDataset
 from attrbench.metrics import (
     Deletion,
+    Insertion,
     Irof,
     Infidelity,
     SensitivityN,
@@ -89,7 +90,7 @@ if __name__ == "__main__":
             )
 
     # Check if args are consistent
-    if args.include_ic and args.patch_folder is None:
+    if "impact_coverage" in args.metrics and args.patch_folder is None:
         raise ValueError("If --include-ic is set, --patch-folder must be set.")
 
     ############
@@ -125,15 +126,15 @@ if __name__ == "__main__":
             remove_if_present(["insertion_morf.h5", "insertion_lerf.h5"])
         for mode in ["morf", "lerf"]:
             print(f"Running insertion-{mode}...")
-            insertion = Deletion(
+            insertion = Insertion(
                 model_factory,
                 attributions_dataset,
                 args.batch_size,
                 maskers=maskers,
                 activation_fns=activation_fns,
                 mode=mode,
-                start=1.0,
-                stop=0.85,
+                start=0.0,
+                stop=0.15,
                 num_steps=100,
             )
             insertion_output_file = os.path.join(
