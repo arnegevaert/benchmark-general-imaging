@@ -100,7 +100,10 @@ def _get_default_dataframes(dirname, baseline):
         if filename in available_files:
             result_object = MetricResult.load(os.path.join(dirname, filename))
             df, higher_is_better = result_object.get_df(masker="constant")
-            result[METRICS[metric_name]] = (df, higher_is_better)
+            result[METRICS[metric_name]] = (
+                _subtract_baseline(df, baseline),
+                higher_is_better,
+            )
 
     # Add infidelity (perturbation_generator, activation_fn)
     if "infidelity.h5" in available_files:
