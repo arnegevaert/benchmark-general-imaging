@@ -16,7 +16,8 @@ METRICS = {
     "insertion_lerf": "Ins - LeRF",
     "irof_morf": "IROF - MoRF",
     "irof_lerf": "IROF - LeRF",
-    "infidelity": "INFD",
+    "infidelity_square": "INFD - SQ",
+    "infidelity_noisy_baseline": "INFD - BL",
 }
 
 METHODS = {
@@ -37,12 +38,13 @@ METHODS = {
 }
 
 
-def _rename_methods(dfs):
+def _rename_metrics_methods(dfs):
     res = {}
-    for key in dfs:
-        df, higher_is_better = dfs[key]
-        df = df.rename(columns=METHODS)
-        res[key] = (df, higher_is_better)
+    for key in METRICS:
+        if key in dfs:
+            df, higher_is_better = dfs[key]
+            df = df.rename(columns=METHODS)
+            res[METRICS[key]] = (df, higher_is_better)
     return res
 
 
@@ -89,7 +91,7 @@ def _get_default_dataframes(dirname, baseline):
             df, higher_is_better = result_object.get_df(
                 masker="constant", activation_fn="linear"
             )
-            result[METRICS[metric_name]] = (
+            result[metric_name] = (
                 _subtract_baseline(df, baseline)
                 if baseline is not None
                 else df,
@@ -102,7 +104,7 @@ def _get_default_dataframes(dirname, baseline):
         if filename in available_files:
             result_object = MetricResult.load(os.path.join(dirname, filename))
             df, higher_is_better = result_object.get_df(masker="constant")
-            result[METRICS[metric_name]] = (
+            result[metric_name] = (
                 _subtract_baseline(df, baseline)
                 if baseline is not None
                 else df,
@@ -114,16 +116,12 @@ def _get_default_dataframes(dirname, baseline):
         infidelity_object = MetricResult.load(
             os.path.join(dirname, "infidelity.h5")
         )
-        for perturbation_generator, abbrev in [
-            ("square", "SQ"),
-            ("noisy_baseline", "BL"),
-        ]:
+        for perturbation_generator in ["square", "noisy_baseline"]:
             df, higher_is_better = infidelity_object.get_df(
                 activation_fn="linear",
                 perturbation_generator=perturbation_generator,
             )
-            metric_name = "INFD - " + abbrev
-            result[metric_name] = (
+            result["infidelity_" + perturbation_generator] = (
                 _subtract_baseline(df, baseline)
                 if baseline is not None
                 else df,
@@ -136,12 +134,12 @@ def _get_default_dataframes(dirname, baseline):
             os.path.join(dirname, "max_sensitivity.h5")
         )
         df, higher_is_better = max_sensitivity_object.get_df()
-        result[METRICS["max_sensitivity"]] = (
+        result["max_sensitivity"] = (
             _subtract_baseline(df, baseline) if baseline is not None else df,
             higher_is_better,
         )
 
-    return _rename_methods(result)
+    return _rename_metrics_methods(result)
 
 
 def _get_all_dataframes(dirname):

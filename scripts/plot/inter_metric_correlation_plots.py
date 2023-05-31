@@ -16,22 +16,17 @@ if __name__ == "__main__":
     mpl.use("Agg")
     np.seterr(all="raise")
 
-    if not os.path.isdir(os.path.join(args.out_dir, "metric_corr")):
-        os.makedirs(os.path.join(args.out_dir, "metric_corr"))
-
-    for metric_selection in ("default", "all"):
-        dfs = get_dataframes(args.in_dir, metric_selection)
-        fig = InterMetricCorrelationPlot(dfs).render(
-            figsize=(7, 7) if metric_selection == "default" else (17, 17),
-            annot=metric_selection == "all",
-            fontsize=15 if metric_selection == "all" else 17,
-        )
-        fig.savefig(
-            os.path.join(
-                args.out_dir,
-                "metric_corr",
-                f"metric_corr_{metric_selection}.svg",
-            ),
-            bbox_inches="tight",
-        )
-        plt.close(fig)
+    dfs = get_dataframes(args.in_dir, mode="default")
+    fig = InterMetricCorrelationPlot(dfs).render(
+        figsize=(7, 7),
+        annot=False,
+        fontsize=15,
+    )
+    fig.savefig(
+        os.path.join(
+            args.out_dir,
+            "metric_corr.svg",
+        ),
+        bbox_inches="tight",
+    )
+    plt.close(fig)
