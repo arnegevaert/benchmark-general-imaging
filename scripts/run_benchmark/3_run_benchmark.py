@@ -1,4 +1,5 @@
 import argparse
+import warnings
 from util.datasets import ALL_DATASETS, get_dataset
 from util.attribution.method_factory import get_method_factory
 from util.models import ModelFactoryImpl
@@ -50,8 +51,7 @@ if __name__ == "__main__":
             "irof",
             "infidelity",
             "sensitivity_n",
-            "seg_sensitivity_n"
-            "minimal_subset_deletion",
+            "seg_sensitivity_n" "minimal_subset_deletion",
             "minimal_subset_insertion",
             "max_sensitivity",
             "impact_coverage",
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     # Check if args are consistent
     if "impact_coverage" in args.metrics and args.patch_folder is None:
-        raise ValueError("If --include-ic is set, --patch-folder must be set.")
+        warnings.warn("Patch folder not set, skipping impact coverage.")
 
     ############
     # DELETION #
@@ -256,7 +256,9 @@ if __name__ == "__main__":
             maskers=maskers,
             mode="deletion",
         )
-        ms_deletion_output_file = os.path.join(args.output_dir, "ms_deletion.h5")
+        ms_deletion_output_file = os.path.join(
+            args.output_dir, "ms_deletion.h5"
+        )
         ms_deletion.run(result_path=ms_deletion_output_file)
         print()
 
@@ -274,7 +276,9 @@ if __name__ == "__main__":
             maskers=maskers,
             mode="insertion",
         )
-        ms_insertion_output_file = os.path.join(args.output_dir, "ms_insertion.h5")
+        ms_insertion_output_file = os.path.join(
+            args.output_dir, "ms_insertion.h5"
+        )
         ms_insertion.run(result_path=ms_insertion_output_file)
         print()
 

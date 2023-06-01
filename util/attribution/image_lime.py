@@ -33,6 +33,7 @@ class ImageLime:
             img = np.transpose(images[i], (1,2,0))
             mask = segmentation.slic(img, start_label=0, n_segments=self.num_segments)
             masks.append(mask)
+        masks = np.array(masks)
         masks = torch.tensor(data=masks, device=x.device, dtype=torch.long)
         masks = masks.unsqueeze(dim=1).expand(-1, num_channels, -1, -1)
 

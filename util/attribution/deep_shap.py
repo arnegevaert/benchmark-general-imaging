@@ -3,6 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from torch import nn
 from attrbench import AttributionMethod
+import warnings
 
 
 class DeepShap(AttributionMethod):
@@ -20,11 +21,13 @@ class DeepShap(AttributionMethod):
         )
 
     def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor):
-        ref_batch = next(iter(self.ref_sampler))[0].to(batch_x.device)
-        # Compute per sample to reduce VRAM usage
-        return torch.cat([
-            self.method.attribute(batch_x[i].unsqueeze(0),
-                                  baselines=ref_batch,
-                                  target=batch_target[i]).detach()
-            for i in range(batch_x.shape[0])
-        ])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            ref_batch = next(iter(self.ref_sampler))[0].to(batch_x.device)
+            # Compute per sample to reduce VRAM usage
+            return torch.cat([
+                self.method.attribute(batch_x[i].unsqueeze(0),
+                                    baselines=ref_batch,
+                                    target=batch_target[i]).detach()
+                for i in range(batch_x.shape[0])
+            ])
