@@ -308,19 +308,18 @@ if __name__ == "__main__":
     # IMPACT COVERAGE #
     ###################
     if "impact_coverage" in args.metrics:
-        if args.include_ic:
-            if args.overwrite:
-                remove_if_present(["impact_coverage.h5"])
-            print("Running Impact Coverage...")
-            coverage = ImpactCoverage(
-                model_factory,
-                index_dataset,
-                args.batch_size,
-                method_factory,
-                args.patch_folder,
-            )
-            coverage_output_file = os.path.join(
-                args.output_dir, "impact_coverage.h5"
-            )
-            coverage.run(result_path=coverage_output_file)
-            print()
+        if args.overwrite:
+            remove_if_present(["impact_coverage.h5"])
+        print("Running Impact Coverage...")
+        coverage = ImpactCoverage(
+            model_factory,
+            index_dataset,
+            args.batch_size,
+            method_factory,
+            args.patch_folder,
+        )
+        coverage_output_file = os.path.join(
+            args.output_dir, "impact_coverage.h5"
+        )
+        coverage.run(result_path=coverage_output_file)
+        print()

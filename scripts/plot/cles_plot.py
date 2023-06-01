@@ -1,11 +1,8 @@
 import argparse
 import matplotlib as mpl
 import numpy as np
-from scipy import stats
 from util.get_dataframes import get_dataframes
-import seaborn as sns
 from matplotlib import pyplot as plt
-import pandas as pd
 import os
 from attrbench.plot.cles_plot import CLESPlot
 

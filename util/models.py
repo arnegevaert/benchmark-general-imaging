@@ -558,11 +558,10 @@ def get_model(dataset_name, data_dir, model_name=None):
             "Caltech256": 267,
             "VOC2012": 20,
         }
-        pretrained = dataset_name == "ImageNet"
         if model_name.lower() == "resnet18":
-            return Resnet18(n_classes[dataset_name], model_path, pretrained)
+            return Resnet18(n_classes[dataset_name], model_path)
         elif model_name.lower() == "resnet50":
-            return Resnet50(n_classes[dataset_name], model_path, pretrained)
+            return Resnet50(n_classes[dataset_name], model_path)
 
 
 class ModelFactoryImpl(ModelFactory):
