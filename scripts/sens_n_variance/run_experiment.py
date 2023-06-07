@@ -5,7 +5,7 @@ import os
 from attrbench.data import HDF5Dataset, AttributionsDataset
 from attrbench.metrics import SensitivityN
 from attrbench.masking import ConstantMasker
-from util.datasets import ALL_DATASETS, get_dataset
+from util.datasets import ALL_DATASETS
 from util.models import ModelFactoryImpl
 
 
