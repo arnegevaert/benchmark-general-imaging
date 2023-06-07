@@ -31,6 +31,9 @@ if __name__ == "__main__":
         for filename in listdir(args.patch_dir)
         if filename.endswith(".pt")
     ]
+    if len(patch_names) == 0:
+        raise ValueError("No patches found in patch directory")
+
     for name in patch_names:
         preds = []
         target_expr = re.compile(r".*_([0-9]*)\.pt")
