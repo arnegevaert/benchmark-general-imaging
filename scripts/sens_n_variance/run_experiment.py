@@ -11,7 +11,9 @@ from util.models import ModelFactoryImpl
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="MNIST", choices=ALL_DATASETS)
+    parser.add_argument(
+        "--dataset", type=str, default="MNIST", choices=ALL_DATASETS
+    )
     parser.add_argument("--model", type=str, default="CNN")
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--iterations", type=int, default=100)
@@ -28,7 +30,7 @@ if __name__ == "__main__":
         samples_dataset,
         args.attrs_file,
         aggregate_axis=0,
-        aggregate_method="mean"
+        aggregate_method="mean",
     )
 
     # Get model
@@ -39,7 +41,7 @@ if __name__ == "__main__":
         os.makedirs(args.out_dir)
     elif len(os.listdir(args.out_dir)) > 0 and not args.overwrite:
         raise ValueError("Output directory is not empty")
-    
+
     sens_n_dfs = []
     seg_sens_n_dfs = []
     for _ in trange(args.iterations):
@@ -55,18 +57,24 @@ if __name__ == "__main__":
                 num_subsets=100,
                 maskers={"constant": ConstantMasker(feature_level="pixel")},
                 activation_fns=["linear"],
-                segmented=segmented
+                segmented=segmented,
             )
             sens_n.run()
 
-            df = sens_n.result.get_df(masker="constant", activation_fn="linear")[0]
+            df = sens_n.result.get_df(
+                masker="constant", activation_fn="linear"
+            )[0]
             if segmented:
                 seg_sens_n_dfs.append(df)
             else:
                 sens_n_dfs.append(df)
-    
+
     sens_n_df = pd.concat(sens_n_dfs)
     seg_sens_n_df = pd.concat(seg_sens_n_dfs)
 
-    sens_n_df.to_csv(os.path.join(args.out_dir, "sens_n.csv"))
-    seg_sens_n_df.to_csv(os.path.join(args.out_dir, "seg_sens_n.csv"))
+    sens_n_df.to_csv(
+        os.path.join(args.out_dir, "sens_n.csv"), index_label="Sample"
+    )
+    seg_sens_n_df.to_csv(
+        os.path.join(args.out_dir, "seg_sens_n.csv"), index_label="Sample"
+    )

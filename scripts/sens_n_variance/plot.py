@@ -1,40 +1,42 @@
 import argparse
 import pandas as pd
-import numpy as np
 import matplotlib as mpl
 import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def snr(arr):
-    mu = np.mean(arr, axis=1)
-    sigma = np.std(arr, axis=1)
-    return (mu**2) / (sigma**2)
+def snr(df):
+    mu = df.groupby("Sample").mean().melt()["value"]
+    sigma = df.groupby("Sample").std().melt()["value"]
+    return ((mu**2) / (sigma**2)).to_numpy()
 
 
-def frac_var(arr):
-    total_var = np.var(arr)
-    sample_var = np.var(arr, axis=1)
-    return (sample_var / total_var) * 100
+def frac_var(df):
+    total_var = df.melt().groupby("variable").var()
+    sample_var = pd.melt(df.reset_index(), id_vars="Sample").groupby(
+         ["Sample", "variable"]).var()
+    return ((sample_var / total_var) * 100).to_numpy().flatten()
 
 
 def make_snr_dataframe(results, ds_name, metric_name):
+    snr_values = snr(results)
     return pd.DataFrame(
         {
-            "SNR": snr(results),
-            "Dataset": [ds_name] * results.shape[0],
-            "Metric": [metric_name] * results.shape[0],
+            "SNR": snr_values,
+            "Dataset": [ds_name] * snr_values.shape[0],
+            "Metric": [metric_name] * snr_values.shape[0],
         }
     )
 
 
 def make_frac_var_dataframe(results, ds_name, metric_name):
+    frac_var_values = frac_var(results)
     return pd.DataFrame(
         {
-            "Noise % var": frac_var(results),
-            "Dataset": [ds_name] * results.shape[0],
-            "Metric": [metric_name] * results.shape[0],
+            "Noise % var": frac_var_values,
+            "Dataset": [ds_name] * frac_var_values.shape[0],
+            "Metric": [metric_name] * frac_var_values.shape[0],
         }
     )
 
@@ -68,11 +70,15 @@ if __name__ == "__main__":
     for ds_name in datasets:
         ds_path = os.path.join(args.in_dir, ds_name)
         if os.path.isdir(ds_path):
-            sens_n_result = np.loadtxt(
-                os.path.join(ds_path, "sens_n.csv"), delimiter=","
+            sens_n_result = pd.read_csv(
+                os.path.join(ds_path, "sens_n.csv"),
+                delimiter=",",
+                index_col="Sample",
             )
-            seg_sens_n_result = np.loadtxt(
-                os.path.join(ds_path, "seg_sens_n.csv"), delimiter=","
+            seg_sens_n_result = pd.read_csv(
+                os.path.join(ds_path, "seg_sens_n.csv"),
+                delimiter=",",
+                index_col="Sample",
             )
 
             snr_dfs.append(
