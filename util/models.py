@@ -539,11 +539,12 @@ def get_model(dataset_name, data_dir, model_name=None):
         model_path = path.join(
             data_dir, f"models/{dataset_name}/{model_name.lower()}.pt"
         )
+        num_classes = 100 if dataset_name == "CIFAR100" else 10
 
         if model_name.lower() == "resnet20":
-            return Resnet20(10, model_path)
+            return Resnet20(num_classes, model_path)
         elif model_name.lower() == "resnet56":
-            return Resnet56(10, model_path)
+            return Resnet56(num_classes, model_path)
     else:
         assert model_name.lower() in [
             "resnet18",
