@@ -1,3 +1,6 @@
+*.svg
+*.png
+*.h5
 Session.vim
 *.png
 data/*
