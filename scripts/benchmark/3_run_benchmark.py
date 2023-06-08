@@ -3,7 +3,7 @@ import warnings
 from util.datasets import ALL_DATASETS, get_dataset
 from util.attribution.method_factory import get_method_factory
 from util.models import ModelFactoryImpl
-from attrbench.data import AttributionsDataset, HDF5Dataset, IndexDataset
+from attrbench.data import AttributionsDataset, HDF5Dataset
 from attrbench.metrics import (
     Deletion,
     Insertion,
@@ -34,8 +34,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset", type=str, default="MNIST", choices=ALL_DATASETS
     )
-    parser.add_argument("--samples-file", type=str, default="samples.h5")
-    parser.add_argument("--attrs-file", type=str, default="attributions.h5")
+    parser.add_argument("--samples-file", type=str, default="out/results/MNIST/samples.h5")
+    parser.add_argument("--attrs-file", type=str, default="out/results/MNIST/attributions.h5")
     parser.add_argument("--data-dir", type=str, default="data")
     parser.add_argument("--model", type=str, default="BasicCNN")
     parser.add_argument("--batch-size", type=int, default=16)
@@ -290,10 +290,9 @@ if __name__ == "__main__":
         if args.overwrite:
             remove_if_present(["max_sensitivity.h5"])
         print("Running Max-Sensitivity...")
-        index_dataset = IndexDataset(samples_dataset)
         max_sensitivity = MaxSensitivity(
             model_factory,
-            index_dataset,
+            samples_dataset,
             args.batch_size,
             method_factory,
             num_perturbations=50,
@@ -314,7 +313,7 @@ if __name__ == "__main__":
         print("Running Impact Coverage...")
         coverage = ImpactCoverage(
             model_factory,
-            index_dataset,
+            samples_dataset,
             args.batch_size,
             method_factory,
             args.patch_folder,

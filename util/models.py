@@ -572,4 +572,6 @@ class ModelFactoryImpl(ModelFactory):
         self.model = model
 
     def __call__(self):
-        return get_model(self.dataset, self.data_dir, self.model)
+        model = get_model(self.dataset, self.data_dir, self.model)
+        model.eval()
+        return model
