@@ -1,7 +1,8 @@
 from util.attribution import Deconvolution, DeepShap, DeepLift,\
     ExpectedGradients, GradCAM, Gradient, InputXGradient, GuidedBackprop,\
     Deconvolution, GuidedGradCAM, IntegratedGradients, SmoothGrad,\
-    VarGrad, KernelShap, ImageLime, Random
+    VarGrad, KernelShap, ImageLime, Random, Rise, ExtremalPerturbation, \
+    Igos, Igos_pp, XRAI
 from attrbench import MethodFactory
 
 def get_method_factory(batch_size, reference_dataset):
@@ -28,4 +29,9 @@ def get_method_factory(batch_size, reference_dataset):
                                    "num_samples": 100}),
             "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300}),
             "Random": Random,
+            "Rise":Rise,
+            "Extremal_perturbation":ExtremalPerturbation,
+            "IGOS": Igos,
+            "IGOS_pp": Igos_pp,
+            "XRAI":(XRAI,{'batch_size':batch_size}),
         })
