@@ -77,17 +77,6 @@ def _add_infidelity(dirname, baseline, result):
         )
 
 
-def _add_max_sensitivity(dirname, baseline, result):
-    max_sensitivity_object = MetricResult.load(
-        os.path.join(dirname, "max_sensitivity.h5")
-    )
-    df, higher_is_better = max_sensitivity_object.get_df()
-    result["max_sensitivity"] = (
-        _subtract_baseline(df, baseline) if baseline is not None else df,
-        higher_is_better,
-    )
-
-
 def _get_default_dataframes(dirname, baseline):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
@@ -105,7 +94,13 @@ def _get_default_dataframes(dirname, baseline):
         key
         for key in METRICS.keys()
         if key
-        not in ["infidelity", "ms_deletion", "ms_insertion", "max_sensitivity"]
+        not in [
+            "infidelity",
+            "ms_deletion",
+            "ms_insertion",
+            "max_sensitivity",
+            "impact_coverage",
+        ]
     ]
     for metric_name in simple_metrics:
         filename = metric_name + ".h5"
@@ -138,9 +133,18 @@ def _get_default_dataframes(dirname, baseline):
     if "infidelity.h5" in available_files:
         _add_infidelity(dirname, baseline, result)
 
-    # Add max-sensitivity (no arguments)
-    if "max_sensitivity.h5" in available_files:
-        _add_max_sensitivity(dirname, baseline, result)
+    # Add max-sensitivity and impact coverage (no arguments)
+    for metric_name in ["max_sensitivity", "impact_coverage"]:
+        filename = metric_name + ".h5"
+        if filename in available_files:
+            result_object = MetricResult.load(os.path.join(dirname, filename))
+            df, higher_is_better = result_object.get_df()
+            result[metric_name] = (
+                _subtract_baseline(df, baseline)
+                if baseline is not None
+                else df,
+                higher_is_better,
+            )
 
     return _rename_metrics_methods(result)
 
@@ -163,7 +167,8 @@ def _get_all_dataframes(dirname, baseline):
         key
         for key in METRICS.keys()
         if key
-        not in ["infidelity", "ms_deletion", "ms_insertion", "max_sensitivity"]
+        not in ["infidelity", "ms_deletion", "ms_insertion", "max_sensitivity",
+                "impact_coverage"]
     ]
     for metric_name in simple_metrics:
         filename = metric_name + ".h5"
@@ -198,10 +203,19 @@ def _get_all_dataframes(dirname, baseline):
     if "infidelity.h5" in available_files:
         _add_infidelity(dirname, baseline, result)
 
-    # Add max-sensitivity (no arguments)
-    if "max_sensitivity.h5" in available_files:
-        _add_max_sensitivity(dirname, baseline, result)
-    
+    # Add max-sensitivity and impact coverage (no arguments)
+    for metric_name in ["max_sensitivity", "impact_coverage"]:
+        filename = metric_name + ".h5"
+        if filename in available_files:
+            result_object = MetricResult.load(os.path.join(dirname, filename))
+            df, higher_is_better = result_object.get_df()
+            result[metric_name] = (
+                _subtract_baseline(df, baseline)
+                if baseline is not None
+                else df,
+                higher_is_better,
+            )
+
     return _rename_metrics_methods(result)
 
 
