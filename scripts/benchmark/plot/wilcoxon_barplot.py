@@ -3,7 +3,7 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-from attrbench.plot import WilcoxonBarPlot
+from attribench.plot import WilcoxonBarPlot
 from util.get_dataframes import get_dataframes
 
 
@@ -26,7 +26,9 @@ METHOD_ORDER = [
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--in-dir", type=str, default="out/results/MNIST")
+    parser.add_argument(
+        "-i", "--in-dir", type=str, default="out/results/MNIST"
+    )
     parser.add_argument("-o", "--out-dir", type=str, default="out/plots/MNIST")
     args = parser.parse_args()
 
@@ -41,7 +43,9 @@ if __name__ == "__main__":
         fig = WilcoxonBarPlot(dfs).render()
         fig.savefig(
             os.path.join(
-                args.out_dir, "wilcoxon_bar", f"wilcoxon_{metric_selection}.svg"
+                args.out_dir,
+                "wilcoxon_bar",
+                f"wilcoxon_{metric_selection}.svg",
             ),
             bbox_inches="tight",
         )

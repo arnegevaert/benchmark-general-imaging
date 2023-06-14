@@ -1,8 +1,8 @@
 import argparse
 from util.models import ModelFactoryImpl
 from util.datasets import ALL_DATASETS, get_dataset
-from attrbench.data import AttributionsDatasetWriter, HDF5Dataset
-from attrbench.distributed import AttributionsComputation
+from attribench.data import AttributionsDatasetWriter, HDF5Dataset
+from attribench.distributed import AttributionsComputation
 from util.attribution.method_factory import get_method_factory
 
 

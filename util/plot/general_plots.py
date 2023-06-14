@@ -5,13 +5,13 @@ from tqdm import tqdm
 import matplotlib as mpl
 import numpy as np
 import os
-from attrbench.suite import SuiteResult
+from attribench.suite import SuiteResult
 from util.wilcoxon import wilcoxon
 from util.krip import compute_krippendorff_alpha, plot_krippendorff_alpha
 from util.inter_metric_correlations import inter_metric_correlations
 from matplotlib import pyplot as plt
 from util.pairwise_tests import pairwise_tests
-from attrbench.suite.plot import InterMetricCorrelationPlot
+from attribench.suite.plot import InterMetricCorrelationPlot
 
 
 def _create_out_dir(dirname=""):

@@ -3,8 +3,8 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-from attrbench.metrics.result import MetricResult
-from attrbench.plot import InterMetricCorrelationPlot
+from attribench.metrics.result import MetricResult
+from attribench.plot import InterMetricCorrelationPlot
 
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     out_dir = os.path.join(args.out_dir, "sens_n_autocorrelation")
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    
+
     available_files = os.listdir(args.in_dir)
     for metric_name in ["sens_n", "seg_sens_n"]:
         if metric_name + ".h5" in available_files:
@@ -40,10 +40,7 @@ if __name__ == "__main__":
             )
 
             ax = fig.axes[0]
-            ax.set_yticklabels(
-                ax.get_yticklabels(),
-                rotation=0
-            )
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
 
             fig.savefig(
                 os.path.join(

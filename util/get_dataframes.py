@@ -1,4 +1,4 @@
-from attrbench.metrics.result import MetricResult
+from attribench.metrics.result import MetricResult
 from pandas import DataFrame
 from typing import Dict, Tuple
 import os
@@ -167,8 +167,13 @@ def _get_all_dataframes(dirname, baseline):
         key
         for key in METRICS.keys()
         if key
-        not in ["infidelity", "ms_deletion", "ms_insertion", "max_sensitivity",
-                "impact_coverage"]
+        not in [
+            "infidelity",
+            "ms_deletion",
+            "ms_insertion",
+            "max_sensitivity",
+            "impact_coverage",
+        ]
     ]
     for metric_name in simple_metrics:
         filename = metric_name + ".h5"

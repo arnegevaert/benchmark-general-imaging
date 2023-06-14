@@ -1,10 +1,9 @@
 from util.models import ModelFactoryImpl
 from util.datasets import get_dataset, SAMPLE_SHAPES, ALL_DATASETS
-from attrbench.data import HDF5DatasetWriter
-from attrbench.distributed import SampleSelection
+from attribench.data import HDF5DatasetWriter
+from attribench.distributed import SampleSelection
 import argparse
 import os
-
 
 
 if __name__ == "__main__":

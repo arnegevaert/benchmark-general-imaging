@@ -1,5 +1,5 @@
 import os
-from attrbench.plot import InterMetricCorrelationPlot
+from attribench.plot import InterMetricCorrelationPlot
 import argparse
 import matplotlib as mpl
 from matplotlib import pyplot as plt

@@ -2,7 +2,7 @@ import argparse
 import matplotlib as mpl
 import numpy as np
 from util.get_dataframes import get_dataframes
-from attrbench.plot import ClusterPlot
+from attribench.plot import ClusterPlot
 import os
 from matplotlib import pyplot as plt
 

@@ -138,7 +138,7 @@ dependencies:
   - zstd=1.5.2=ha4553b6_0
   - pip:
       - absl-py==1.4.0
-      - attrbench==0.0.2
+      - attribench==0.0.2
       - cachetools==5.2.1
       - charset-normalizer==3.0.1
       - contourpy==1.0.7

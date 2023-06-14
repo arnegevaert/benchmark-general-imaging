@@ -3,8 +3,8 @@ import warnings
 from util.datasets import ALL_DATASETS, get_dataset
 from util.attribution.method_factory import get_method_factory
 from util.models import ModelFactoryImpl
-from attrbench.data import AttributionsDataset, HDF5Dataset
-from attrbench.metrics import (
+from attribench.data import AttributionsDataset, HDF5Dataset
+from attribench.metrics import (
     Deletion,
     Insertion,
     Irof,
@@ -14,8 +14,8 @@ from attrbench.metrics import (
     MaxSensitivity,
     ImpactCoverage,
 )
-from attrbench.masking import ConstantMasker, RandomMasker, BlurringMasker
-from attrbench.metrics.infidelity import (
+from attribench.masking import ConstantMasker, RandomMasker, BlurringMasker
+from attribench.metrics.infidelity import (
     NoisyBaselinePerturbationGenerator,
     GaussianPerturbationGenerator,
     SquarePerturbationGenerator,
@@ -34,8 +34,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset", type=str, default="MNIST", choices=ALL_DATASETS
     )
-    parser.add_argument("--samples-file", type=str, default="out/results/MNIST/samples.h5")
-    parser.add_argument("--attrs-file", type=str, default="out/results/MNIST/attributions.h5")
+    parser.add_argument(
+        "--samples-file", type=str, default="out/results/MNIST/samples.h5"
+    )
+    parser.add_argument(
+        "--attrs-file", type=str, default="out/results/MNIST/attributions.h5"
+    )
     parser.add_argument("--data-dir", type=str, default="data")
     parser.add_argument("--model", type=str, default="BasicCNN")
     parser.add_argument("--batch-size", type=int, default=16)

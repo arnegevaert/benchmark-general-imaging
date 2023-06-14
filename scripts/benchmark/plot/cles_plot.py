@@ -4,7 +4,7 @@ import numpy as np
 from util.get_dataframes import get_dataframes
 from matplotlib import pyplot as plt
 import os
-from attrbench.plot.cles_plot import CLESPlot
+from attribench.plot.cles_plot import CLESPlot
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import argparse
 from os import path
 from util.models import ModelFactoryImpl
 from util.datasets import get_dataset
-from attrbench.metrics.impact_coverage import MakePatches
+from attribench.metrics.impact_coverage import MakePatches
 
 
 if __name__ == "__main__":

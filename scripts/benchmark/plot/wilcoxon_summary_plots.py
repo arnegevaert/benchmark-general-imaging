@@ -3,7 +3,7 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-from attrbench.plot import WilcoxonSummaryPlot
+from attribench.plot import WilcoxonSummaryPlot
 from util.get_dataframes import get_dataframes
 from tqdm import tqdm
 
@@ -44,15 +44,15 @@ if __name__ == "__main__":
         for metric_selection in ("default", "all"):
             dfs = get_dataframes(in_dir, metric_selection, baseline="Random")
             fig = WilcoxonSummaryPlot(dfs).render(
-                figsize=(10, 10) if metric_selection == "default" else (10, 25),
+                figsize=(10, 10)
+                if metric_selection == "default"
+                else (10, 25),
                 glyph_scale=1000,
                 fontsize=25,
                 method_order=METHOD_ORDER,
             )
             fig.savefig(
-                os.path.join(
-                    out_dir, f"wilcoxon_{metric_selection}.svg"
-                ),
+                os.path.join(out_dir, f"wilcoxon_{metric_selection}.svg"),
                 bbox_inches="tight",
             )
             plt.close(fig)

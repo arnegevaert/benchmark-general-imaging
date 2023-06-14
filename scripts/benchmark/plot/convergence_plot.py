@@ -2,7 +2,7 @@ import argparse
 import matplotlib as mpl
 import numpy as np
 from util.get_dataframes import get_dataframes
-from attrbench.plot import ConvergencePlot
+from attribench.plot import ConvergencePlot
 import os
 from matplotlib import pyplot as plt
 
@@ -27,9 +27,7 @@ if __name__ == "__main__":
     for metric_name, (df, higher_is_better) in dfs.items():
         fig = ConvergencePlot(df).render()
         fig.savefig(
-            os.path.join(
-                out_dir, metric_name + ".svg"
-            ),
+            os.path.join(out_dir, metric_name + ".svg"),
             bbox_inches="tight",
         )
         plt.close(fig)

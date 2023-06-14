@@ -3,8 +3,8 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-from attrbench.metrics.result import MetricResult
-from attrbench.plot import InterMetricCorrelationPlot
+from attribench.metrics.result import MetricResult
+from attribench.plot import InterMetricCorrelationPlot
 
 
 if __name__ == "__main__":
@@ -51,11 +51,7 @@ if __name__ == "__main__":
             )
 
             ax = fig.axes[0]
-            ax.set_yticklabels(
-                ax.get_yticklabels(),
-                rotation=0
-            )
-
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
 
             fig.savefig(
                 os.path.join(
