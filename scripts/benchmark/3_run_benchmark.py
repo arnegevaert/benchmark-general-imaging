@@ -81,7 +81,6 @@ if __name__ == "__main__":
     }
     method_factory = get_method_factory(
         args.batch_size, reference_dataset=reference_dataset,
-        methods=["Gradient", "InputXGradient"],
     )
     activation_fns = ["linear", "softmax"]
 
@@ -99,7 +98,7 @@ if __name__ == "__main__":
     if "impact_coverage" in args.metrics and args.patch_folder is None:
         warnings.warn("Patch folder not set, skipping impact coverage.")
         args.metrics.remove("impact_coverage")
-
+    
     ############
     # DELETION #
     ############

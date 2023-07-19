@@ -25,7 +25,6 @@ if __name__ == "__main__":
     method_factory = get_method_factory(
         args.batch_size,
         reference_dataset=reference_dataset,
-        methods=["Gradient", "InputXGradient"],
     )
 
     computation = ComputeAttributions(
