@@ -4,7 +4,7 @@ from util.datasets import ALL_DATASETS, get_dataset
 from util.attribution.method_factory import get_method_factory
 from util.models import ModelFactoryImpl
 from attribench.data import AttributionsDataset, HDF5Dataset
-from attribench.metrics import (
+from attribench.distributed.metrics import (
     Deletion,
     Insertion,
     Irof,
@@ -14,8 +14,8 @@ from attribench.metrics import (
     MaxSensitivity,
     ImpactCoverage,
 )
-from attribench.masking import ConstantMasker, RandomMasker, BlurringMasker
-from attribench.metrics.infidelity import (
+from attribench.masking.image import ConstantImageMasker, RandomImageMasker, BlurringImageMasker
+from attribench.functional.metrics.infidelity import (
     NoisyBaselinePerturbationGenerator,
     GaussianPerturbationGenerator,
     SquarePerturbationGenerator,
@@ -68,19 +68,20 @@ if __name__ == "__main__":
     samples_dataset = HDF5Dataset(args.samples_file)
     reference_dataset = get_dataset(args.dataset, args.data_dir)
     attributions_dataset = AttributionsDataset(
-        samples_dataset,
-        args.attrs_file,
-        aggregate_axis=0,
+        samples=samples_dataset,
+        path=args.attrs_file,
+        aggregate_dim=0,
         aggregate_method="mean",
     )
     model_factory = ModelFactoryImpl(args.dataset, args.data_dir, args.model)
     maskers = {
-        "constant": ConstantMasker(feature_level="pixel"),
-        "random": RandomMasker(feature_level="pixel"),
-        "blurring": BlurringMasker(feature_level="pixel", kernel_size=0.5),
+        "constant": ConstantImageMasker(masking_level="pixel"),
+        "random": RandomImageMasker(masking_level="pixel"),
+        "blurring": BlurringImageMasker(masking_level="pixel", kernel_size=0.5),
     }
     method_factory = get_method_factory(
-        args.batch_size, reference_dataset=reference_dataset
+        args.batch_size, reference_dataset=reference_dataset,
+        methods=["Gradient", "InputXGradient"],
     )
     activation_fns = ["linear", "softmax"]
 
@@ -97,6 +98,7 @@ if __name__ == "__main__":
     # Check if args are consistent
     if "impact_coverage" in args.metrics and args.patch_folder is None:
         warnings.warn("Patch folder not set, skipping impact coverage.")
+        args.metrics.remove("impact_coverage")
 
     ############
     # DELETION #
@@ -184,7 +186,6 @@ if __name__ == "__main__":
             "square": SquarePerturbationGenerator(square_size=5),
         }
 
-        attributions_dataset.group_attributions = True
         infidelity = Infidelity(
             model_factory,
             attributions_dataset,
@@ -195,7 +196,6 @@ if __name__ == "__main__":
         )
         infidelity_output_file = os.path.join(args.output_dir, "infidelity.h5")
         infidelity.run(result_path=infidelity_output_file)
-        attributions_dataset.group_attributions = False
         print()
 
     #################
@@ -205,7 +205,6 @@ if __name__ == "__main__":
         if args.overwrite:
             remove_if_present(["sens_n.h5"])
         print("Running Sensitivity-N...")
-        attributions_dataset.group_attributions = True
         sens_n = SensitivityN(
             model_factory,
             attributions_dataset,
@@ -219,7 +218,6 @@ if __name__ == "__main__":
         )
         sens_n_output_file = os.path.join(args.output_dir, "sens_n.h5")
         sens_n.run(result_path=sens_n_output_file)
-        attributions_dataset.group_attributions = False
         print()
 
     #####################
@@ -229,7 +227,6 @@ if __name__ == "__main__":
         if args.overwrite:
             remove_if_present(["seg_sens_n.h5"])
         print("Running Seg-Sensitivity-N...")
-        attributions_dataset.group_attributions = True
         seg_sens_n = SensitivityN(
             model_factory,
             attributions_dataset,
@@ -244,7 +241,6 @@ if __name__ == "__main__":
         )
         seg_sens_n_output_file = os.path.join(args.output_dir, "seg_sens_n.h5")
         seg_sens_n.run(result_path=seg_sens_n_output_file)
-        attributions_dataset.group_attributions = False
         print()
 
     ###########################
@@ -296,7 +292,7 @@ if __name__ == "__main__":
         print("Running Max-Sensitivity...")
         max_sensitivity = MaxSensitivity(
             model_factory,
-            samples_dataset,
+            attributions_dataset,
             args.batch_size,
             method_factory,
             num_perturbations=50,
