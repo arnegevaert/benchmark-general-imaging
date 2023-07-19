@@ -88,7 +88,7 @@ class KernelShap(AttributionMethod):
         # captum runs it per sample in a for loop anyway.
         # With the perturbations_per_eval parameter, we can control how many
         # perturbed samples are run in parallel.
-        internal_batch_size = x.shape[0]
+        internal_batch_size = batch_x.shape[0]
         return torch.cat(
             [
                 self.method.attribute(
