@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.hub import load_state_dict_from_url
-from attribench.distributed import ModelFactory
+from attribench import ModelFactory
 
 
 model_urls = {
