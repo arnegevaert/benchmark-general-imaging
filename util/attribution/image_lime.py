@@ -31,7 +31,7 @@ class ImageLime(AttributionMethod):
             self.method = attr.Lime(self.model, similarity_func=sim_fn)
 
         # Segment the images using SLIC
-        images = x.detach().cpu().numpy()
+        images = batch_x.detach().cpu().numpy()
         num_channels = images.shape[1]
         masks = []
         for i in range(images.shape[0]):
