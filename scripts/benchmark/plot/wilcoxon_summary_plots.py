@@ -1,3 +1,17 @@
+"""
+This script generates the Wilcoxon summary plots all datasets of which
+the raw results are provided.
+
+The '--in-dir' argument should point to a directory containing the results
+for all datasets, i.e. the directory should contain a subdirectory for each
+dataset. Each of these subdirectories should contain the results for the
+corresponding dataset, as produced by the 'scripts/benchmark/3_run_benchmark.py'
+script.
+
+The '--out-dir' argument should point to the directory where the plots should
+be saved. The plots for each dataset will be saved in a subdirectory of the
+output directory with the same name as the dataset.
+"""
 import argparse
 import matplotlib as mpl
 from matplotlib import pyplot as plt
@@ -26,9 +40,23 @@ METHOD_ORDER = [
 ]
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--in-dir", type=str, default="out/results")
-    parser.add_argument("-o", "--out-dir", type=str, default="out/plots")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        "-i",
+        "--in-dir",
+        type=str,
+        help="Path to results directory.",
+        required=True,
+    )
+    parser.add_argument(
+        "-o",
+        "--out-dir",
+        type=str,
+        help="Path to output directory.",
+        required=True,
+    )
     args = parser.parse_args()
 
     mpl.use("Agg")

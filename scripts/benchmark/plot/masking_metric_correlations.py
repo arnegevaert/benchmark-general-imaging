@@ -3,18 +3,14 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-from attribench.metrics.result import MetricResult
+from attribench.result import MetricResult
 from attribench.plot import InterMetricCorrelationPlot
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--in-dir", type=str, default="out/results/ImageNet"
-    )
-    parser.add_argument(
-        "-o", "--out-dir", type=str, default="out/plots/ImageNet"
-    )
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")

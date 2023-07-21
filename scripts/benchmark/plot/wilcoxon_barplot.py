@@ -26,10 +26,8 @@ METHOD_ORDER = [
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--in-dir", type=str, default="out/results/MNIST"
-    )
-    parser.add_argument("-o", "--out-dir", type=str, default="out/plots/MNIST")
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")

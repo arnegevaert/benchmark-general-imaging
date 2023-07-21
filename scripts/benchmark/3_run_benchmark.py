@@ -164,10 +164,10 @@ if __name__ == "__main__":
                 args.batch_size,
                 maskers=maskers,
                 activation_fns=activation_fns,
+                mode=mode,
                 start=0.0,
                 stop=1.0,
                 num_steps=100,
-                mode=mode,
             )
             irof_output_file = os.path.join(args.output_dir, f"irof_{mode}.h5")
             irof.run(result_path=irof_output_file)
@@ -190,9 +190,9 @@ if __name__ == "__main__":
             model_factory,
             attributions_dataset,
             args.batch_size,
+            activation_fns=activation_fns,
             perturbation_generators=perturbation_generators,
             num_perturbations=1000,
-            activation_fns=activation_fns,
         )
         infidelity_output_file = os.path.join(args.output_dir, "infidelity.h5")
         infidelity.run(result_path=infidelity_output_file)
@@ -209,12 +209,13 @@ if __name__ == "__main__":
             model_factory,
             attributions_dataset,
             args.batch_size,
+            maskers=maskers,
+            activation_fns=activation_fns,
             min_subset_size=0.1,
             max_subset_size=0.5,
             num_steps=10,
             num_subsets=100,
-            maskers=maskers,
-            activation_fns=activation_fns,
+            segmented=False,
         )
         sens_n_output_file = os.path.join(args.output_dir, "sens_n.h5")
         sens_n.run(result_path=sens_n_output_file)
@@ -231,13 +232,13 @@ if __name__ == "__main__":
             model_factory,
             attributions_dataset,
             args.batch_size,
+            maskers=maskers,
+            activation_fns=activation_fns,
             min_subset_size=0.1,
             max_subset_size=0.5,
             num_steps=10,
             num_subsets=100,
             segmented=True,
-            maskers=maskers,
-            activation_fns=activation_fns,
         )
         seg_sens_n_output_file = os.path.join(args.output_dir, "seg_sens_n.h5")
         seg_sens_n.run(result_path=seg_sens_n_output_file)

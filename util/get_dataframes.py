@@ -1,4 +1,4 @@
-from attribench.metrics.result import MetricResult
+from attribench.result import MetricResult
 from pandas import DataFrame
 from typing import Dict, Tuple
 import os
@@ -38,7 +38,9 @@ METHODS = {
 }
 
 
-def _rename_metrics_methods(dfs):
+def _rename_metrics_methods(
+    dfs: Dict[str, Tuple[DataFrame, bool]]
+) -> Dict[str, Tuple[DataFrame, bool]]:
     res = {}
     for key in dfs:
         # Get alternative metric name
@@ -56,13 +58,17 @@ def _rename_metrics_methods(dfs):
     return res
 
 
-def _subtract_baseline(df, baseline_method):
+def _subtract_baseline(df: DataFrame, baseline_method: str) -> DataFrame:
     df = df.sub(df[baseline_method], axis=0)
     df = df.drop(columns=[baseline_method])
     return df
 
 
-def _add_infidelity(dirname, baseline, result):
+def _add_infidelity(
+    dirname: str,
+    result: Dict[str, Tuple[DataFrame, bool]],
+    baseline: str | None = None,
+):
     infidelity_object = MetricResult.load(
         os.path.join(dirname, "infidelity.h5")
     )
@@ -77,7 +83,7 @@ def _add_infidelity(dirname, baseline, result):
         )
 
 
-def _get_default_dataframes(dirname, baseline):
+def _get_default_dataframes(dirname: str, baseline: str | None = None):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
     and the values are tuples of (dataframe, higher_is_better).
@@ -131,7 +137,7 @@ def _get_default_dataframes(dirname, baseline):
 
     # Add infidelity (perturbation_generator, activation_fn)
     if "infidelity.h5" in available_files:
-        _add_infidelity(dirname, baseline, result)
+        _add_infidelity(dirname, result, baseline)
 
     # Add max-sensitivity and impact coverage (no arguments)
     for metric_name in ["max_sensitivity", "impact_coverage"]:
@@ -149,7 +155,7 @@ def _get_default_dataframes(dirname, baseline):
     return _rename_metrics_methods(result)
 
 
-def _get_all_dataframes(dirname, baseline):
+def _get_all_dataframes(dirname: str, baseline: str | None = None):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
     and the values are tuples of (dataframe, higher_is_better).
@@ -206,7 +212,7 @@ def _get_all_dataframes(dirname, baseline):
 
     # Add infidelity (perturbation_generator, activation_fn)
     if "infidelity.h5" in available_files:
-        _add_infidelity(dirname, baseline, result)
+        _add_infidelity(dirname, result, baseline)
 
     # Add max-sensitivity and impact coverage (no arguments)
     for metric_name in ["max_sensitivity", "impact_coverage"]:
@@ -224,12 +230,13 @@ def _get_all_dataframes(dirname, baseline):
     return _rename_metrics_methods(result)
 
 
-def get_dataframes(dirname, mode="default", baseline=None):
-    if mode not in ["default", "all"]:
-        raise ValueError("mode must be one of ['default', 'all']")
-
+def get_dataframes(
+    dirname: str, mode="default", baseline: str | None = None
+) -> Dict[str, Tuple[DataFrame, bool]]:
     if mode == "default":
         return _get_default_dataframes(dirname, baseline)
     elif mode == "all":
         # return _get_all_dataframes(dirname)
         return _get_all_dataframes(dirname, baseline)
+    else:
+        raise ValueError("mode must be one of ['default', 'all']")

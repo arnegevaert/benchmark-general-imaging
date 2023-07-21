@@ -9,8 +9,8 @@ from util.get_dataframes import get_dataframes
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--in-dir", type=str, default="out/MNIST")
-    parser.add_argument("-o", "--out-dir", type=str, default="plot/MNIST")
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")

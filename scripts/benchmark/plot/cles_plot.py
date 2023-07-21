@@ -4,15 +4,15 @@ import numpy as np
 from util.get_dataframes import get_dataframes
 from matplotlib import pyplot as plt
 import os
-from attribench.plot.cles_plot import CLESPlot
+from attribench.plot import CLESPlot
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("method1", type=str)
     parser.add_argument("method2", type=str)
-    parser.add_argument("-i", "--in-dir", type=str, default="out/MNIST")
-    parser.add_argument("-o", "--out-dir", type=str, default="plot/MNIST")
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")
