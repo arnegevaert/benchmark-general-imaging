@@ -1,3 +1,4 @@
+import torch
 import argparse
 import warnings
 from util.datasets import ALL_DATASETS, get_dataset
@@ -13,6 +14,7 @@ from attribench.distributed.metrics import (
     MinimalSubset,
     MaxSensitivity,
     ImpactCoverage,
+    ParameterRandomization,
 )
 from attribench.masking.image import ConstantImageMasker, RandomImageMasker, BlurringImageMasker
 from attribench.functional.metrics.infidelity import (
@@ -60,6 +62,7 @@ if __name__ == "__main__":
             "minimal_subset_insertion",
             "max_sensitivity",
             "impact_coverage",
+            "parameter_randomization"
         ],
     )
     args = parser.parse_args()
@@ -322,4 +325,24 @@ if __name__ == "__main__":
             args.output_dir, "impact_coverage.h5"
         )
         coverage.run(result_path=coverage_output_file)
+        print()
+
+    ###########################
+    # PARAMETER RANDOMIZATION #
+    ###########################
+    if "parameter_randomization" in args.metrics:
+        if args.overwrite:
+            remove_if_present(["parameter_randomization.h5"])
+        print("Running Parameter Randomization...")
+        # TODO use distributed version
+        parameter_randomization = ParameterRandomization(
+            model_factory,
+            attributions_dataset,
+            args.batch_size,
+            method_factory,
+        )
+        parameter_randomization_output_file = os.path.join(
+            args.output_dir, "parameter_randomization.h5"
+        )
+        parameter_randomization.run(result_path=parameter_randomization_output_file)
         print()
