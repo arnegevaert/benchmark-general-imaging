@@ -1,5 +1,5 @@
 # Evaluating Feature Attribution Methods in the Image Domain
-This repository contains the code to reproduce the results presented in [Evaluating Feature Attribution Methods in the Image Domain](www.arxiv.org). Implementations of the metrics are available in the [`attrbench` package](https://github.com/zoeparman/benchmark), which this repository depends on.
+This repository contains the code to reproduce the results presented in [Evaluating Feature Attribution Methods in the Image Domain](www.arxiv.org). Implementations of the metrics are available in the [`attribench` package](https://github.com/zoeparman/benchmark), which this repository depends on.
 
 ## Installation
 Installing the required dependencies to reproduce and/or visualize the results can be done using a [virtual environment](https://docs.python.org/3/tutorial/venv.html):
@@ -45,7 +45,7 @@ For more information, run `python train_patches.py -h`.
 (venv) $ python download_reqs.py -r
 ```
 
-To run the general benchmark on a given dataset, use the `run_benchmark.py` script. This script requires 2 configuration files: one file specifying the metrics that need to be run (this configuration is passed to the `attrbench` dependency package), and another specifying the attribution methods that need to be tested (this configuration is processed directly). The following commands can be used to run the full benchmark on all datasets from the original publication, for 256 samples using a batch size of 64:
+To run the general benchmark on a given dataset, use the `run_benchmark.py` script. This script requires 2 configuration files: one file specifying the metrics that need to be run (this configuration is passed to the `attribench` dependency package), and another specifying the attribution methods that need to be tested (this configuration is processed directly). The following commands can be used to run the full benchmark on all datasets from the original publication, for 256 samples using a batch size of 64:
 ```bash
 (venv) $ python run_benchmark.py -d ImageNet -m resnet18 -b 64 -n 256 -ci -o imagenet.h5 config/suite.yaml config/methods.yaml
 (venv) $ python run_benchmark.py -d Caltech256 -m resnet18 -b 64 -n 256 -ci -o caltech.h5 config/suite.yaml config/methods.yaml

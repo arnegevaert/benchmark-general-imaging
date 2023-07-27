@@ -1,6 +1,6 @@
-from attrbench.suite import SuiteResult
+from attribench.suite import SuiteResult
 from experiments.general_imaging.plot.dfs import get_default_dfs
-from attrbench.suite.plot import WilcoxonSummaryPlot
+from attribench.suite.plot import WilcoxonSummaryPlot
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":

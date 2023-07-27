@@ -1,7 +1,7 @@
 from captum import attr
 from torch import nn
 import torch
-from attrbench import AttributionMethod
+from attribench import AttributionMethod
 
 
 class Gradient(AttributionMethod):

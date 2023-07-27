@@ -1,7 +1,7 @@
 import torch
 from skimage.filters import sobel
 import torch
-from attrbench import AttributionMethod
+from attribench import AttributionMethod
 
 
 class EdgeDetection(AttributionMethod):

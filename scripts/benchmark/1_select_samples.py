@@ -1,10 +1,8 @@
 from util.models import ModelFactoryImpl
-from util.datasets import get_dataset, SAMPLE_SHAPES, ALL_DATASETS
-from attrbench.data import HDF5DatasetWriter
-from attrbench.distributed import SampleSelection
+from util.datasets import get_dataset, ALL_DATASETS
+from attribench.distributed import SelectSamples
 import argparse
 import os
-
 
 
 if __name__ == "__main__":
@@ -32,16 +30,10 @@ if __name__ == "__main__":
     # model = Model(get_model(args.dataset, args.data_dir, args.model))
     model_factory = ModelFactoryImpl(args.dataset, args.data_dir, args.model)
 
-    writer = HDF5DatasetWriter(
-        path=args.output_file,
-        num_samples=args.num_samples,
-        sample_shape=SAMPLE_SHAPES[args.dataset],
-    )
-    sample_selection = SampleSelection(
+    sample_selection = SelectSamples(
         model_factory,
         get_dataset(args.dataset, args.data_dir),
-        writer,
         num_samples=args.num_samples,
         batch_size=args.batch_size,
     )
-    sample_selection.run()
+    sample_selection.run(args.output_file)

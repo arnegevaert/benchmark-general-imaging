@@ -43,16 +43,18 @@ def make_frac_var_dataframe(results, ds_name, metric_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--in-dir", type=str, default="out/results/sens_n_variance"
-    )
-    parser.add_argument(
-        "-o", "--out-dir", type=str, default="out/plots/sens_n_variance"
-    )
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")
     sns.set()
+    
+    # Check if output directory exists and is empty
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+    elif len(os.listdir(args.out_dir)) > 0:
+        raise ValueError("Output directory is not empty")
 
     datasets = [
         "MNIST",

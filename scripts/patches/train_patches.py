@@ -2,7 +2,7 @@ import argparse
 from os import path
 from util.models import ModelFactoryImpl
 from util.datasets import get_dataset
-from attrbench.metrics.impact_coverage import MakePatches
+from attribench.distributed import TrainAdversarialPatches
 
 
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     model_factory = ModelFactoryImpl(args.dataset, args.data_dir, args.model)
     dataset = get_dataset(args.dataset, args.data_dir)
-    make_patches = MakePatches(
+    train_adv_patches = TrainAdversarialPatches(
         model_factory, dataset, args.num_patches, args.batch_size, args.out_dir
     )
-    make_patches.run()
+    train_adv_patches.run()

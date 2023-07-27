@@ -1,5 +1,5 @@
 from experiments.general_imaging.plot.dfs import get_all_dfs
-from attrbench.suite import SuiteResult
+from attribench.suite import SuiteResult
 from pingouin import wilcoxon
 import seaborn as sns
 import pandas as pd
@@ -24,7 +24,12 @@ if __name__ == "__main__":
         result_cles[key] = cles if pvalue < 0.01 else 0.5
 
     sns.set_color_codes("muted")
-    df = pd.DataFrame(result_cles, index=["CLES"]).transpose().reset_index().rename(columns={"index": "Metric"})
+    df = (
+        pd.DataFrame(result_cles, index=["CLES"])
+        .transpose()
+        .reset_index()
+        .rename(columns={"index": "Metric"})
+    )
     df["CLES"] -= 0.5
     fig, ax = plt.subplots(figsize=(5, 7))
     sns.barplot(data=df, x="CLES", y="Metric", color="b", left=0.5, ax=ax)
