@@ -1,5 +1,5 @@
 
-from attrbench import AttributionMethod
+from attribench import AttributionMethod
 import torch
 import saliency.core as saliency
 import numpy as np

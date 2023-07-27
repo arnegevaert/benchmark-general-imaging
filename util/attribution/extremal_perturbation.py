@@ -1,10 +1,10 @@
-from attrbench import AttributionMethod
+from attribench import AttributionMethod
 import torch
 from torch import nn
 import saliency.core as saliency
 from .extremal.extremal_perturbation import extremal_perturbation, contrastive_reward, simple_reward
 
-class ExtremalPerturbation_batched(AttributionMethod):
+class ExtremalPerturbation(AttributionMethod):
     def __init__(self, model: nn.Module,reward = 'simple_reward', areas=0.1)-> None:
         super().__init__(model)
         if reward=='simple_reward':

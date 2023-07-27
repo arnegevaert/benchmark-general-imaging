@@ -2,9 +2,10 @@ import types
 import torch
 from torch import nn
 from torchvision.transforms import GaussianBlur
-from attrbench import AttributionMethod
+from attribench import AttributionMethod
 from .igos_lib.methods import IGOS, iGOS_p, iGOS_pp
 from .igos_lib.methods_helper import *
+from typing import Callable
 
 args = types.SimpleNamespace(size=28,
                              batch_size=1,
@@ -19,6 +20,7 @@ class _Igos_base(AttributionMethod):
     def __init__(self, model: nn.Module, **kwargs) -> None:
         super().__init__(model)
         self.blur = GaussianBlur((51, 51), sigma=50)
+        self.method: Callable
 
     def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor) -> torch.Tensor:
        channels=batch_x.shape[1]
