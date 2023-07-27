@@ -4,10 +4,14 @@ from skimage import segmentation
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
+from attribench import AttributionMethod
+from torch import nn
 
 
-class TabularShap:
-    def __init__(self, model, n_samples, baselines=None, feature_mask=None):
+class TabularShap(AttributionMethod):
+    def __init__(
+        self, model: nn.Module, n_samples, baselines=None, feature_mask=None
+    ):
         self.method = attr.ShapleyValueSampling(model)
         self.n_samples = n_samples
         if isinstance(baselines, list):
@@ -15,11 +19,11 @@ class TabularShap:
         self.baselines = baselines
         self.feature_mask = feature_mask
 
-    def __call__(self, x, target):
+    def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor):
         return self.method.attribute(
-            x,
+            batch_x,
             baselines=self.baselines,
-            target=target,
+            target=batch_target,
             feature_mask=self.feature_mask,
         )
 
@@ -47,13 +51,13 @@ class TabularLime:
         )
 
 
-class KernelShap:
+class KernelShap(AttributionMethod):
     def __init__(
         self,
-        model,
-        num_samples,
+        model: nn.Module,
+        num_samples: int,
         super_pixels=True,
-        num_segments=None,
+        num_segments: int | None = None,
         feature_mask=None,
         baselines=None,
     ):
@@ -70,12 +74,12 @@ class KernelShap:
             baselines = torch.Tensor(baselines)[None]
         self.baselines = baselines
 
-    def __call__(self, x, target):
+    def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor):
         if self.feature_mask is not None:
             masks = self.feature_mask
         else:
             masks = (
-                get_super_pixels(x, self.num_segments)
+                get_super_pixels(batch_x, self.num_segments)
                 if self.super_pixels
                 else None
             )
@@ -84,17 +88,17 @@ class KernelShap:
         # captum runs it per sample in a for loop anyway.
         # With the perturbations_per_eval parameter, we can control how many
         # perturbed samples are run in parallel.
-        internal_batch_size = x.shape[0]
+        internal_batch_size = batch_x.shape[0]
         return torch.cat(
             [
                 self.method.attribute(
-                    x[i, ...].unsqueeze(0),
-                    target=target[i],
+                    batch_x[i, ...].unsqueeze(0),
+                    target=batch_target[i],
                     feature_mask=masks[i, ...].unsqueeze(0),
                     n_samples=self.num_samples,
                     perturbations_per_eval=internal_batch_size,
                 )
-                for i in range(x.shape[0])
+                for i in range(batch_x.shape[0])
             ],
             dim=0,
         )

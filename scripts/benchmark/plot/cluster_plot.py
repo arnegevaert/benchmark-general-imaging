@@ -2,17 +2,15 @@ import argparse
 import matplotlib as mpl
 import numpy as np
 from util.get_dataframes import get_dataframes
-from attrbench.plot import ClusterPlot
+from attribench.plot import ClusterPlot
 import os
 from matplotlib import pyplot as plt
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-i", "--in-dir", type=str, default="out/results/MNIST"
-    )
-    parser.add_argument("-o", "--out-dir", type=str, default="out/plots/MNIST")
+    parser.add_argument("-i", "--in-dir", type=str)
+    parser.add_argument("-o", "--out-dir", type=str)
     args = parser.parse_args()
 
     mpl.use("Agg")

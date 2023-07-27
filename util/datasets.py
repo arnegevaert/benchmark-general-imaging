@@ -1,4 +1,5 @@
 from torchvision import datasets, transforms
+from torch.utils.data import Dataset
 from os import path
 import os
 from PIL import Image
@@ -116,7 +117,7 @@ SAMPLE_SHAPES = {
 }
 
 
-def get_dataset(name, data_dir, train=False):
+def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
     assert name in ALL_DATASETS, f"Invalid dataset: {name}."
     if name == "MNIST":
         transform = transforms.Compose(

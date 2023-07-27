@@ -12,11 +12,11 @@ from util.datasets import get_dataset
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="ImageNet")
-    parser.add_argument("--data-dir", type=str, default="data")
-    parser.add_argument("--patch-dir", type=str, default="data/patches/ImageNet/resnet18")
-    parser.add_argument("--model", type=str, default="resnet18")
-    parser.add_argument("--batch-size", type=int, default=128)
+    parser.add_argument("--dataset", type=str)
+    parser.add_argument("--data-dir", type=str)
+    parser.add_argument("--patch-dir", type=str)
+    parser.add_argument("--model", type=str)
+    parser.add_argument("--batch-size", type=int)
     args = parser.parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
