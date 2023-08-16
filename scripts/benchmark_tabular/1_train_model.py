@@ -4,17 +4,9 @@ from sklearn.datasets import fetch_openml
 from torch.utils.data import DataLoader
 import torch
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 import numpy as np
-from util.tabular import OpenMLDataset, BasicNN
-
-
-_DATASETS = {
-    "satimage": {"data_id": 182, "pred_type": "classification"},
-    "adult": {"data_id": 1590, "pred_type": "classification"},
-    "spambase": {"data_id": 44, "pred_type": "classification"},
-    "dna": {"data_id": 40670, "pred_type": "classification"},
-}
-
+from util.tabular import OpenMLDataset, BasicNN, _DATASETS
 
 
 if __name__ == "__main__":
@@ -64,6 +56,13 @@ if __name__ == "__main__":
         if y_train.dtype == "category":
             y_train = y_train.cat.codes
             y_test = y_test.cat.codes
+    
+    # Standard normalize data
+    for col in X_train.columns:
+        scaler = StandardScaler()
+        scaler.fit(X_train[col].values.reshape(-1, 1))
+        X_train[col] = scaler.transform(X_train[col].values.reshape(-1, 1))
+        X_test[col] = scaler.transform(X_test[col].values.reshape(-1, 1))
 
     train_dataset = OpenMLDataset(
         X_train.values, y_train.values, ds_meta["pred_type"]
@@ -81,7 +80,7 @@ if __name__ == "__main__":
         pred_type=ds_meta["pred_type"],
     )
     train_dl = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    model.train(train_dl, num_epochs=args.num_epochs)
+    model.fit(train_dl, num_epochs=args.num_epochs)
 
     # Evaluate model on test set
     train_performance = model.test(DataLoader(train_dataset, batch_size=128))

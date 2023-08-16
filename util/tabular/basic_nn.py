@@ -28,7 +28,7 @@ class BasicNN(nn.Module):
             return nn.functional.log_softmax(result, dim=1)
         return result
 
-    def train(self, train_dl, num_epochs):
+    def fit(self, train_dl, num_epochs):
         criterion = (
             nn.CrossEntropyLoss()
             if self.pred_type == "classification"

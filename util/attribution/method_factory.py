@@ -62,7 +62,7 @@ def get_method_factory(
         ),
         "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300}),
         "Random": Random,
-        "Rise":Rise,
+        #"Rise":Rise,
         "Extremal_perturbation":ExtremalPerturbation,
         "IGOS": Igos,
         "IGOS_pp": Igos_pp,

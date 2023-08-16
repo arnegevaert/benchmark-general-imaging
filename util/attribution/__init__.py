@@ -18,7 +18,6 @@ from .shap import KernelShap, TabularShap, TabularLime
 from .image_lime import ImageLime
 from .deep_shap import DeepShap
 from .igos import Igos, Igos_pp
-from .rise import Rise
 from .xrai import XRAI
 from .extremal_perturbation import ExtremalPerturbation
 
