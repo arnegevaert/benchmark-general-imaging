@@ -526,7 +526,7 @@ class Resnet18(ResNet):
         return last_block.conv2
 
 
-def get_model(dataset_name, data_dir, model_name=None):
+def get_model(dataset_name, data_dir, model_name) -> nn.Module:
     assert dataset_name in ALL_DATASETS, f"Invalid dataset: {dataset_name}."
     if dataset_name in ["MNIST", "FashionMNIST"]:
         model_path = path.join(data_dir, f"models/{dataset_name}/cnn.pt")
@@ -563,7 +563,7 @@ def get_model(dataset_name, data_dir, model_name=None):
             return Resnet18(n_classes[dataset_name], model_path)
         elif model_name.lower() == "resnet50":
             return Resnet50(n_classes[dataset_name], model_path)
-
+    raise ValueError(f"Invalid model: {model_name}")
 
 class ModelFactoryImpl(ModelFactory):
     def __init__(self, dataset, data_dir, model):
