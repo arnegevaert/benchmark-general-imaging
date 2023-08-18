@@ -16,11 +16,9 @@ from util.attribution import (
     KernelShap,
     ImageLime,
     Random,
-    Rise,
-    ExtremalPerturbation,
-    Igos,
-    Igos_pp,
-    XRAI
+    XRAI,
+    GradCAMPP,
+    ScoreCAM,
 )
 from attribench import MethodFactory
 from torch.utils.data import Dataset
@@ -62,11 +60,13 @@ def get_method_factory(
         ),
         "LIME": (ImageLime, {"num_segments": 50, "num_samples": 300}),
         "Random": Random,
-        #"Rise":Rise,
-        "Extremal_perturbation":ExtremalPerturbation,
-        "IGOS": Igos,
-        "IGOS_pp": Igos_pp,
         "XRAI":(XRAI,{'batch_size':batch_size}),
+        "GradCAM++": GradCAMPP,
+        "ScoreCAM": ScoreCAM,
+        #"Rise":Rise,
+        #"Extremal_perturbation":ExtremalPerturbation,
+        #"IGOS": Igos,
+        #"IGOS_pp": Igos_pp,
     }
 
     if methods is not None:

@@ -20,6 +20,9 @@ from .deep_shap import DeepShap
 from .igos import Igos, Igos_pp
 from .xrai import XRAI
 from .extremal_perturbation import ExtremalPerturbation
+from .gradcam_pp import GradCAMPP
+from .scorecam import ScoreCAM
+from .cgi import CGI
 
 # Post-processing wrappers
 from .pixel_aggregation import *  # Aggregate along color channels
