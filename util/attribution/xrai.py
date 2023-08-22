@@ -27,7 +27,7 @@ class XRAI(AttributionMethod):
 
         orig_warning_setting = os.environ.get("PYTHONWARNINGS", "")
         os.environ['PYTHONWARNINGS']='ignore::FutureWarning'
-        res_list = joblib.Parallel(n_jobs=-1, verbose=1)(
+        res_list = joblib.Parallel(n_jobs=-1, verbose=0)(
             joblib.delayed(self.xrai_object.GetMask)(
                 im.transpose(1, 2, 0),
                 None,
