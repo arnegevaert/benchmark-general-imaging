@@ -1,4 +1,4 @@
-from torchcam.methods.gradient import GradCAMpp as TCGradCAMpp
+from util.torchcam.methods.gradient import GradCAMpp as TCGradCAMpp
 import torch.nn.functional as F
 import torch
 from .gradcam import GradCAM

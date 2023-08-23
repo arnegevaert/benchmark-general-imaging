@@ -1,4 +1,4 @@
-from torchcam.methods.activation import ScoreCAM as TCScoreCAM
+from util.torchcam.methods.activation import ScoreCAM as TCScoreCAM
 from .gradcam import GradCAM
 import torch
 
