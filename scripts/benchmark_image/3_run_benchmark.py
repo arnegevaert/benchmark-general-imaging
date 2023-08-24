@@ -83,7 +83,9 @@ if __name__ == "__main__":
         "blurring": BlurringImageMasker(masking_level="pixel", kernel_size=0.5),
     }
     method_factory = get_method_factory(
-        args.batch_size, reference_dataset=reference_dataset,
+        args.batch_size,
+        reference_dataset=reference_dataset,
+        methods=attributions_dataset.method_names
     )
     activation_fns = ["linear", "softmax"]
 
