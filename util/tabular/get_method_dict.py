@@ -1,25 +1,35 @@
-from util import attribution
+from util.attribution import (
+    Gradient,
+    InputXGradient,
+    DeepLift,
+    IntegratedGradients,
+    SmoothGrad,
+    VarGrad,
+    DeepShap,
+    ExpectedGradients,
+    Random,
+)
 
 
 def get_method_dict(model, train_dataset):
     method_dict = {
-        "Gradient": attribution.Gradient(model),
-        "InputXGradient": attribution.InputXGradient(model),
-        "DeepLift": attribution.DeepLift(model),
-        "IntegratedGradients": attribution.IntegratedGradients(
+        "Gradient": Gradient(model),
+        "InputXGradient": InputXGradient(model),
+        "DeepLift": DeepLift(model),
+        "IntegratedGradients": IntegratedGradients(
             model, internal_batch_size=32, num_steps=25
         ),
-        "SmoothGrad": attribution.SmoothGrad(
+        "SmoothGrad": SmoothGrad(
             model, num_samples=50, stdev=0.15
         ),
-        "VarGrad": attribution.VarGrad(model, num_samples=50, stdev=0.15),
-        "DeepShap": attribution.DeepShap(
+        "VarGrad": VarGrad(model, num_samples=50, stdev=0.15),
+        "DeepShap": DeepShap(
             model, reference_dataset=train_dataset, num_baseline_samples=100
         ),
-        "ExpectedGradients": attribution.ExpectedGradients(
+        "ExpectedGradients": ExpectedGradients(
             model, reference_dataset=train_dataset, num_samples=100
         ),
-        "Random": attribution.Random(model),
-        # TODO add RISE, extremal perturbation, XRAI, KernelSHAP, LIME (as applicable)
+        "Random": Random(model),
+        # TODO add KernelSHAP, LIME (as applicable)
     }
     return method_dict
