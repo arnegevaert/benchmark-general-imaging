@@ -2,34 +2,24 @@ from captum import attr
 import torch
 import numpy as np
 from skimage import segmentation
-import math
 from attribench import AttributionMethod
 from torch import nn
 
 
 class ImageLime(AttributionMethod):
     def __init__(self, model: nn.Module, num_samples, num_segments):
-        self.model = model
-        self.method = None
+        super().__init__(model)
+        # Cosine distance with kernel width=0.25 is the default for images
+        # in the original LIME repository
+        sim_fn = attr._core.lime.get_exp_kernel_similarity_function(
+            kernel_width=0.25,
+            distance_mode="cosine"
+        )
+        self.method = attr.Lime(self.model, similarity_func=sim_fn)
         self.num_samples = num_samples
         self.num_segments = num_segments
 
     def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor):
-        # If this is the first call, the method hasn't been set yet.
-        # This is because the kernel width depends on the number of dimensions.
-        # Setting it to 0.75 * sqrt(d) is recommended by the authors.
-        # Default kernel in captum is cosine distance, but authors use L2
-        # (euclidean) for images.
-        if self.method is None:
-            num_features = batch_x.flatten(1).shape[1]
-            kernel_width = 0.75 * math.sqrt(num_features)
-            sim_fn = attr._core.lime.get_exp_kernel_similarity_function(
-                distance_mode="euclidean", kernel_width=kernel_width
-            )
-            # Need to pass lasso manually, current captum implementation
-            # uses alpha=1. This should be alpha=0.01
-            self.method = attr.Lime(self.model, similarity_func=sim_fn)
-
         # Segment the images using SLIC
         images = batch_x.detach().cpu().numpy()
         num_channels = images.shape[1]

@@ -14,8 +14,9 @@ from .integrated_gradients import IntegratedGradients
 from .smooth_grad import SmoothGrad
 from .var_grad import VarGrad
 from .deeplift import DeepLift
-from .shap import KernelShap, TabularShap, TabularLime
+from .kernel_shap import KernelShap
 from .image_lime import ImageLime
+from .tabular_lime import TabularLime
 from .deep_shap import DeepShap
 from .igos import Igos, Igos_pp
 from .xrai import XRAI

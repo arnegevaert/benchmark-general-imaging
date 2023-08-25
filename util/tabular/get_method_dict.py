@@ -8,6 +8,8 @@ from util.attribution import (
     DeepShap,
     ExpectedGradients,
     Random,
+    KernelShap,
+    TabularLime
 )
 
 
@@ -30,6 +32,7 @@ def get_method_dict(model, train_dataset):
             model, reference_dataset=train_dataset, num_samples=100
         ),
         "Random": Random(model),
-        # TODO add KernelSHAP, LIME (as applicable)
+        "KernelSHAP": KernelShap(model, num_samples=300, super_pixels=False),
+        "LIME": TabularLime(model, num_samples=300)
     }
     return method_dict
