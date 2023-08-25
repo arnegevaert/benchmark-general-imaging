@@ -17,7 +17,7 @@ if __name__ == "__main__":
         " for NaNs and Infs."
     )
     parser.add_argument(
-        "--dir",
+        "dir",
         type=str,
         help="Path to the directory containing the results to check.",
     )

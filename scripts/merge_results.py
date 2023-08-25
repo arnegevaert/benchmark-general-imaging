@@ -34,13 +34,13 @@ if __name__ == "__main__":
         "--src-dir",
         type=str,
         help="Path to the directory containing the source results."
-        "In case of overlap, the source results will be used.",
+        " In case of overlap, the source results will be used.",
     )
     parser.add_argument(
         "--dst-dir",
         type=str,
         help="Path to the directory containing the destination results."
-        "In case of overlap, the destination results will be overwritten by"
+        " In case of overlap, the destination results will be overwritten by"
         " the source results.",
     )
     parser.add_argument(
