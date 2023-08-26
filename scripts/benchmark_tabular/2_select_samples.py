@@ -30,10 +30,10 @@ if __name__ == "__main__":
     model_factory = BasicModelFactory(model)
 
     # Select correctly classified samples
-    writer = HDF5DatasetWriter(args.output_file, args.num_samples)
     sample_selection = SelectSamples(
         model_factory,
         test_dataset,
         num_samples=args.num_samples,
         batch_size=32,
     )
+    sample_selection.run(args.output_file)
