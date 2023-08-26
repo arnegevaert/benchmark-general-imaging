@@ -2,9 +2,10 @@ import numpy as np
 import torch
 from util.tabular import _DATASETS, OpenMLDataset, BasicNN
 from attribench.data import HDF5DatasetWriter
+from attribench import BasicModelFactory
 import os
 import argparse
-from attribench.functional import select_samples
+from attribench.distributed import SelectSamples
 
 
 if __name__ == "__main__":
@@ -26,13 +27,13 @@ if __name__ == "__main__":
     model = BasicNN(input_size=X_test.shape[1], output_size=len(set(y_test)))
     model_path = os.path.join(ds_path, "model.pt")
     model.load_state_dict(torch.load(model_path))
+    model_factory = BasicModelFactory(model)
 
     # Select correctly classified samples
     writer = HDF5DatasetWriter(args.output_file, args.num_samples)
-    select_samples(
-        model,
+    sample_selection = SelectSamples(
+        model_factory,
         test_dataset,
         num_samples=args.num_samples,
         batch_size=32,
-        writer=writer,
     )
