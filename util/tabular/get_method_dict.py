@@ -13,7 +13,7 @@ from util.attribution import (
 )
 
 
-def get_method_dict(model, train_dataset):
+def get_method_dict(model, reference_dataset):
     method_dict = {
         "Gradient": Gradient(model),
         "InputXGradient": InputXGradient(model),
@@ -26,10 +26,10 @@ def get_method_dict(model, train_dataset):
         ),
         "VarGrad": VarGrad(model, num_samples=50, stdev=0.15),
         "DeepShap": DeepShap(
-            model, reference_dataset=train_dataset, num_baseline_samples=100
+            model, reference_dataset=reference_dataset, num_baseline_samples=100
         ),
         "ExpectedGradients": ExpectedGradients(
-            model, reference_dataset=train_dataset, num_samples=100
+            model, reference_dataset=reference_dataset, num_samples=100
         ),
         "Random": Random(model),
         "KernelSHAP": KernelShap(model, num_samples=300, super_pixels=False),

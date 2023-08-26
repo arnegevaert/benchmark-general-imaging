@@ -1,4 +1,5 @@
 import h5py
+import shutil
 from tqdm import tqdm
 import argparse
 import os
@@ -92,6 +93,12 @@ if __name__ == "__main__":
             os.path.join(args.out_dir, ds, "attributions.h5"), "w"
         )
         merge_attributions(src_attrs_file, dst_attrs_file, out_attrs_file)
+
+        # Copy samples file
+        shutil.copyfile(
+            os.path.join(args.src_dir, ds, "samples.h5"),
+            os.path.join(args.out_dir, ds, "samples.h5"),
+        )
 
         # Merge all result files
         result_files = [
