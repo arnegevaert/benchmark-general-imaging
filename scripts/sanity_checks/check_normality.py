@@ -36,7 +36,7 @@ if __name__ == "__main__":
                         normal_count += 1
                 except ValueError:
                     nan_count += 1
-                print(f"  {key}: Normal: {normal_count/len(df.columns)*100:.2f}%, "
-                    f"Non-normal: {non_normal_count/len(df.columns)*100:.2f}%, "
-                    f"NaNs: {nan_count/len(df.columns)*100:.2f}%"
-                )
+            print(f"  {key}: Normal: {normal_count/len(df.columns)*100:.2f}%, "
+                f"Non-normal: {non_normal_count/len(df.columns)*100:.2f}%, "
+                f"NaNs: {nan_count/len(df.columns)*100:.2f}%"
+            )

@@ -1,6 +1,6 @@
 from attribench.result import MetricResult
 from pandas import DataFrame
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 import os
 
 METRICS = {
@@ -18,6 +18,7 @@ METRICS = {
     "irof_lerf": "IROF - LeRF",
     "infidelity_square": "INFD - SQ",
     "infidelity_noisy_baseline": "INFD - BL",
+    "infidelity_gaussian": "INFD - GA",
 }
 
 METHODS = {
@@ -64,39 +65,54 @@ def _subtract_baseline(df: DataFrame, baseline_method: str) -> DataFrame:
     return df
 
 
+def get_metric_result(
+    dirname: str, metric_name: str
+) -> Optional[MetricResult]:
+    csv_path = os.path.join(dirname, metric_name)
+    h5_path = os.path.join(dirname, metric_name + ".h5")
+    if os.path.isdir(csv_path):
+        return MetricResult.load(csv_path)
+    elif os.path.isfile(h5_path):
+        return MetricResult.load(h5_path)
+    else:
+        return None
+
+
 def _add_infidelity(
     dirname: str,
     result: Dict[str, Tuple[DataFrame, bool]],
     baseline: str | None = None,
+    activation_fns=None,
 ):
-    infidelity_object = MetricResult.load(
-        os.path.join(dirname, "infidelity.h5")
-    )
-    for perturbation_generator in ["square", "noisy_baseline"]:
-        df, higher_is_better = infidelity_object.get_df(
-            activation_fn="linear",
-            perturbation_generator=perturbation_generator,
-        )
-        result["infidelity_" + perturbation_generator] = (
-            _subtract_baseline(df, baseline) if baseline is not None else df,
-            higher_is_better,
-        )
+    infidelity_object = get_metric_result(dirname, "infidelity")
+    if infidelity_object is not None:
+        perturbation_generators = infidelity_object.levels[
+            "perturbation_generator"
+        ]
+        for perturbation_generator in perturbation_generators:
+            if activation_fns is None:
+                activation_fns = infidelity_object.levels["activation_fn"]
+            for activation_fn in activation_fns:
+                df, higher_is_better = infidelity_object.get_df(
+                    activation_fn=activation_fn,
+                    perturbation_generator=perturbation_generator,
+                )
+                result["infidelity_" + perturbation_generator] = (
+                    _subtract_baseline(df, baseline)
+                    if baseline is not None
+                    else df,
+                    higher_is_better,
+                )
 
 
-def _get_default_dataframes(dirname: str, baseline: str | None = None):
-    """
-    Returns a dictionary of dataframes, where the keys are the metric names
-    and the values are tuples of (dataframe, higher_is_better).
-
-    Extracts the default dataframes from each metric:
-    - masker = "constant"
-    - activation_fn = "linear"
-    """
-    result: Dict[str, Tuple[DataFrame, bool]] = {}
-    available_files = os.listdir(dirname)
-
-    # Add simple metrics (masker, activation_fn)
-    simple_metrics = [
+def _add_masker_activation_metrics(
+    dirname: str,
+    result: Dict[str, Tuple[DataFrame, bool]],
+    baseline: str | None = None,
+    maskers=None,
+    activation_fns=None,
+):
+    masker_activation_metrics = [
         key
         for key in METRICS.keys()
         if key
@@ -108,42 +124,55 @@ def _get_default_dataframes(dirname: str, baseline: str | None = None):
             "impact_coverage",
         ]
     ]
-    for metric_name in simple_metrics:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
-            df, higher_is_better = result_object.get_df(
-                masker="constant", activation_fn="linear"
-            )
-            result[metric_name] = (
-                _subtract_baseline(df, baseline)
-                if baseline is not None
-                else df,
-                higher_is_better,
-            )
+    for metric_name in masker_activation_metrics:
+        result_object = get_metric_result(dirname, metric_name)
+        if result_object is not None:
+            if maskers is None:
+                maskers = result_object.levels["masker"]
+            if activation_fns is None:
+                activation_fns = result_object.levels["activation_fn"]
+            for masker in maskers:
+                for activation_fn in activation_fns:
+                    df, higher_is_better = result_object.get_df(
+                        masker=masker, activation_fn=activation_fn
+                    )
+                    result[metric_name] = (
+                        _subtract_baseline(df, baseline)
+                        if baseline is not None
+                        else df,
+                        higher_is_better,
+                    )
 
-    # Add minimal subset (masker)
+
+def _add_masker_metrics(
+    dirname: str,
+    result: Dict[str, Tuple[DataFrame, bool]],
+    baseline: str | None = None,
+    maskers=None,
+):
     for metric_name in ["ms_deletion", "ms_insertion"]:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
-            df, higher_is_better = result_object.get_df(masker="constant")
-            result[metric_name] = (
-                _subtract_baseline(df, baseline)
-                if baseline is not None
-                else df,
-                higher_is_better,
-            )
+        result_object = get_metric_result(dirname, metric_name)
+        if result_object is not None:
+            if maskers is None:
+                maskers = result_object.levels["masker"]
+            for masker in maskers:
+                df, higher_is_better = result_object.get_df(masker=masker)
+                result[metric_name] = (
+                    _subtract_baseline(df, baseline)
+                    if baseline is not None
+                    else df,
+                    higher_is_better,
+                )
 
-    # Add infidelity (perturbation_generator, activation_fn)
-    if "infidelity.h5" in available_files:
-        _add_infidelity(dirname, result, baseline)
 
-    # Add max-sensitivity and impact coverage (no arguments)
+def _add_no_arg_metrics(
+    dirname: str,
+    result: Dict[str, Tuple[DataFrame, bool]],
+    baseline: str | None = None,
+):
     for metric_name in ["max_sensitivity", "impact_coverage"]:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
+        result_object = get_metric_result(dirname, metric_name)
+        if result_object is not None:
             df, higher_is_better = result_object.get_df()
             result[metric_name] = (
                 _subtract_baseline(df, baseline)
@@ -151,6 +180,39 @@ def _get_default_dataframes(dirname: str, baseline: str | None = None):
                 else df,
                 higher_is_better,
             )
+    pass
+
+
+def _get_default_dataframes(
+    dirname: str, baseline: str | None = None
+):
+    """
+    Returns a dictionary of dataframes, where the keys are the metric names
+    and the values are tuples of (dataframe, higher_is_better).
+
+    Extracts the default dataframes from each metric:
+    - masker = "constant"
+    - activation_fn = "linear"
+    """
+    result: Dict[str, Tuple[DataFrame, bool]] = {}
+
+    # Add masker and activation metrics (masker, activation_fn)
+    _add_masker_activation_metrics(
+        dirname,
+        result,
+        baseline,
+        maskers=["constant"],
+        activation_fns=["linear"],
+    )
+
+    # Add minimal subset (masker)
+    _add_masker_metrics(dirname, result, baseline, maskers=["constant"])
+
+    # Add infidelity (perturbation_generator, activation_fn)
+    _add_infidelity(dirname, result, baseline, activation_fns=["linear"])
+
+    # Add max-sensitivity and impact coverage (no arguments)
+    _add_no_arg_metrics(dirname, result, baseline)
 
     return _rename_metrics_methods(result)
 
@@ -165,68 +227,26 @@ def _get_all_dataframes(dirname: str, baseline: str | None = None):
     - activation_fn = "linear"
     """
     result: Dict[str, Tuple[DataFrame, bool]] = {}
-    available_files = os.listdir(dirname)
-    maskers = ["constant", "random", "blurring"]
 
-    # Add simple metrics (masker, activation_fn)
-    simple_metrics = [
-        key
-        for key in METRICS.keys()
-        if key
-        not in [
-            "infidelity",
-            "ms_deletion",
-            "ms_insertion",
-            "max_sensitivity",
-            "impact_coverage",
-        ]
-    ]
-    for metric_name in simple_metrics:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
-            for masker in maskers:
-                df, higher_is_better = result_object.get_df(
-                    masker=masker, activation_fn="linear"
-                )
-                result[f"{metric_name} - {masker}"] = (
-                    _subtract_baseline(df, baseline)
-                    if baseline is not None
-                    else df,
-                    higher_is_better,
-                )
+    # Add masker and activation metrics (masker, activation_fn)
+    _add_masker_activation_metrics(
+        dirname,
+        result,
+        baseline,
+        maskers=None,
+        activation_fns=["linear"],
+    )
 
     # Add minimal subset (masker)
-    for metric_name in ["ms_deletion", "ms_insertion"]:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
-            for masker in maskers:
-                df, higher_is_better = result_object.get_df(masker=masker)
-                result[f"{metric_name} - {masker}"] = (
-                    _subtract_baseline(df, baseline)
-                    if baseline is not None
-                    else df,
-                    higher_is_better,
-                )
+    _add_masker_metrics(dirname, result, baseline, maskers=None)
 
     # Add infidelity (perturbation_generator, activation_fn)
-    if "infidelity.h5" in available_files:
-        _add_infidelity(dirname, result, baseline)
+    _add_infidelity(dirname, result, baseline, activation_fns=["linear"])
 
     # Add max-sensitivity and impact coverage (no arguments)
-    for metric_name in ["max_sensitivity", "impact_coverage"]:
-        filename = metric_name + ".h5"
-        if filename in available_files:
-            result_object = MetricResult.load(os.path.join(dirname, filename))
-            df, higher_is_better = result_object.get_df()
-            result[metric_name] = (
-                _subtract_baseline(df, baseline)
-                if baseline is not None
-                else df,
-                higher_is_better,
-            )
+    _add_no_arg_metrics(dirname, result, baseline)
 
+    # Add simple metrics (masker, activation_fn)
     return _rename_metrics_methods(result)
 
 
