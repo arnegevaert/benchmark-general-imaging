@@ -1,7 +1,11 @@
 import argparse
+import seaborn as sns
 import os
 from util import plot
 from tqdm import tqdm
+import pandas as pd
+import matplotlib.pyplot as plt
+from attribench.result import MetricResult
 
 
 if __name__ == "__main__":
@@ -75,16 +79,18 @@ if __name__ == "__main__":
     ########################
     # MASKING CORRELATIONS #
     ########################
-    prog = tqdm([
-        "deletion_morf",
-        "deletion_lerf",
-        "insertion_morf",
-        "insertion_lerf",
-        "irof_morf",
-        "irof_lerf",
-        "ms_deletion",
-        "ms_insertion",
-    ])
+    prog = tqdm(
+        [
+            "deletion_morf",
+            "deletion_lerf",
+            "insertion_morf",
+            "insertion_lerf",
+            "irof_morf",
+            "irof_lerf",
+            "ms_deletion",
+            "ms_insertion",
+        ]
+    )
     prog.set_description("Generating masking correlation plots")
     for metric_name in prog:
         plot.generate_inter_metric_correlation_plot_with_maskers(
@@ -122,4 +128,50 @@ if __name__ == "__main__":
     print("Generating Krippendorff Alpha plots")
     plot.generate_krippendorff_alpha_bar_plot(
         args.in_dir, args.out_dir, dataset_colors
+    )
+    #################################
+    # PARAMETER RANDOMIZATION PLOTS #
+    #################################
+
+    results = {}
+    for ds_name in os.listdir(args.in_dir):
+        metric_result = MetricResult.load(
+            os.path.join(args.in_dir, ds_name, "parameter_randomization.h5")
+        )
+        df, _ = metric_result.get_df()
+        results[ds_name] = df.median()
+    result_df = pd.DataFrame.from_dict(results, orient="index")
+    result_df.rename(
+        columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"}, inplace=True
+    )
+
+    result_df = result_df.reindex(
+        [
+            "MNIST",
+            "FashionMNIST",
+            "CIFAR10",
+            "CIFAR100",
+            "SVHN",
+            "ImageNet",
+            "Places365",
+            "Caltech256",
+        ]
+    )
+    result_df = result_df[method_order]
+
+    fig, ax = plt.subplots(figsize=(10, 7))
+    sns.heatmap(
+        result_df,
+        annot=True,
+        ax=ax,
+        cmap=sns.color_palette("RdYlGn_r", 1000),
+        fmt=".2f",
+    )
+    ax.set_xticklabels(
+        ax.get_xticklabels(), rotation=45, horizontalalignment="right"
+    )
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+    fig.savefig(
+        os.path.join(args.out_dir, "parameter_randomization.svg"),
+        bbox_inches="tight",
     )
