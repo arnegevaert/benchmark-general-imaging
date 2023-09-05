@@ -14,7 +14,7 @@ def snr(df):
 
 def frac_var(df):
     total_var = df.melt().groupby("variable").var()
-    sample_var = pd.melt(df.reset_index(), id_vars="Sample").groupby(
+    sample_var = pd.melt(df.reset_index(), id_vars=["Sample"]).groupby(
          ["Sample", "variable"]).var()
     return ((sample_var / total_var) * 100).to_numpy().flatten()
 
