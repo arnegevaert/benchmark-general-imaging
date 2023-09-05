@@ -36,6 +36,10 @@ METHODS = {
     "DeepShap": "DeepSHAP",
     "KernelShap": "KernelSHAP",
     "LIME": "LIME",
+    "Random": "Random",
+    "XRAI": "XRAI",
+    "GradCAM++": "GradCAM++",
+    "ScoreCAM": "ScoreCAM",
 }
 
 
@@ -86,9 +90,7 @@ def _add_infidelity(
 ):
     infidelity_object = get_metric_result(dirname, "infidelity")
     if infidelity_object is not None:
-        perturbation_generators = infidelity_object.levels[
-            "perturbation_generator"
-        ]
+        perturbation_generators = ["noisy_baseline", "square"]
         for perturbation_generator in perturbation_generators:
             if activation_fns is None:
                 activation_fns = infidelity_object.levels["activation_fn"]
@@ -136,7 +138,15 @@ def _add_masker_activation_metrics(
                     df, higher_is_better = result_object.get_df(
                         masker=masker, activation_fn=activation_fn
                     )
-                    result[metric_name] = (
+                    if len(maskers) == 1 and len(activation_fns) == 1:
+                        key = metric_name
+                    elif len(maskers) == 1:
+                        key = f"{metric_name} - {activation_fn}"
+                    elif len(activation_fns) == 1:
+                        key = f"{metric_name} - {masker}"
+                    else:
+                        key = f"{metric_name} - {masker} - {activation_fn}"
+                    result[key] = (
                         _subtract_baseline(df, baseline)
                         if baseline is not None
                         else df,
@@ -157,7 +167,11 @@ def _add_masker_metrics(
                 maskers = result_object.levels["masker"]
             for masker in maskers:
                 df, higher_is_better = result_object.get_df(masker=masker)
-                result[metric_name] = (
+                if len(maskers) == 1:
+                    key = metric_name
+                else:
+                    key = f"{metric_name} - {masker}"
+                result[key] = (
                     _subtract_baseline(df, baseline)
                     if baseline is not None
                     else df,
