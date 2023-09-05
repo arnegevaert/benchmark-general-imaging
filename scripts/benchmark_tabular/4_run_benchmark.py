@@ -2,9 +2,16 @@ import os
 import numpy as np
 import torch
 import argparse
-from util.tabular import _DATASETS, OpenMLDataset, BasicNN, get_method_dict
+from util.tabular import (
+    _DATASETS,
+    OpenMLDataset,
+    BasicNN,
+    get_method_dict,
+    get_method_factory,
+)
 from attribench.data import AttributionsDataset, HDF5Dataset
 from attribench.masking import TabularMasker
+from attribench import BasicModelFactory
 from attribench.functional.metrics.infidelity import (
     NoisyBaselinePerturbationGenerator,
     GaussianPerturbationGenerator,
@@ -16,6 +23,7 @@ from attribench.functional.metrics import (
     sensitivity_n,
     minimal_subset,
     max_sensitivity,
+    parameter_randomization,
 )
 
 
@@ -38,15 +46,14 @@ if __name__ == "__main__":
             "minimal_subset_deletion",
             "minimal_subset_insertion",
             "max_sensitivity",
+            "parameter_randomization",
         ],
     )
     args = parser.parse_args()
 
     # Get samples and attributions dataset
     samples_dataset = HDF5Dataset(args.samples_file)
-    attrs_dataset = AttributionsDataset(
-        samples_dataset, path=args.attrs_file
-    )
+    attrs_dataset = AttributionsDataset(samples_dataset, path=args.attrs_file)
 
     # Get train dataset
     ds_path = os.path.join(args.data_dir, args.dataset)
@@ -89,8 +96,8 @@ if __name__ == "__main__":
                 num_steps=num_inputs // 2,
             )
             result.save(
-                os.path.join(args.output_dir, f"deletion-{mode}"),
-                format="csv",
+                os.path.join(args.output_dir, f"deletion-{mode}.h5"),
+                format="hdf5",
             )
 
     #############
@@ -111,8 +118,8 @@ if __name__ == "__main__":
                 num_steps=num_inputs // 2,
             )
             result.save(
-                os.path.join(args.output_dir, f"insertion-{mode}"),
-                format="csv",
+                os.path.join(args.output_dir, f"insertion-{mode}.h5"),
+                format="hdf5",
             )
 
     ##############
@@ -132,7 +139,9 @@ if __name__ == "__main__":
             perturbation_generators,
             num_perturbations=1000,
         )
-        result.save(os.path.join(args.output_dir, "infidelity"), format="csv")
+        result.save(
+            os.path.join(args.output_dir, "infidelity.h5"), format="hdf5"
+        )
 
     #################
     # SENSITIVITY_N #
@@ -149,10 +158,10 @@ if __name__ == "__main__":
             max_subset_size=0.5,
             num_steps=10,
             num_subsets=100,
-            segmented=False
+            segmented=False,
         )
         result.save(
-            os.path.join(args.output_dir, "sensitivity_n"), format="csv"
+            os.path.join(args.output_dir, "sensitivity_n.h5"), format="hdf5"
         )
 
     ###########################
@@ -169,8 +178,8 @@ if __name__ == "__main__":
             num_steps=num_inputs,
         )
         result.save(
-            os.path.join(args.output_dir, "minimal_subset_deletion"),
-            format="csv",
+            os.path.join(args.output_dir, "minimal_subset_deletion.h5"),
+            format="hdf5",
         )
 
     ############################
@@ -187,8 +196,8 @@ if __name__ == "__main__":
             num_steps=num_inputs,
         )
         result.save(
-            os.path.join(args.output_dir, "minimal_subset_insertion"),
-            format="csv",
+            os.path.join(args.output_dir, "minimal_subset_insertion.h5"),
+            format="hdf5",
         )
 
     ###################
@@ -201,9 +210,24 @@ if __name__ == "__main__":
             args.batch_size,
             method_dict,
             num_perturbations=50,
-            radius=0.1
+            radius=0.1,
         )
         result.save(
-            os.path.join(args.output_dir, "max_sensitivity"),
-            format="csv",
+            os.path.join(args.output_dir, "max_sensitivity.h5"),
+            format="hdf5",
+        )
+
+    ###########################
+    # PARAMETER RANDOMIZATION #
+    ###########################
+    if "parameter_randomization" in args.metrics:
+        print("Running Parameter Randomization...")
+        model_factory = BasicModelFactory(model)
+        method_factory = get_method_factory(train_dataset)
+        result = parameter_randomization(
+            model_factory, attrs_dataset, args.batch_size, method_factory
+        )
+        result.save(
+            os.path.join(args.output_dir, "parameter_randomization.h5"),
+            format="hdf5",
         )

@@ -336,7 +336,6 @@ if __name__ == "__main__":
         if args.overwrite:
             remove_if_present(["parameter_randomization.h5"])
         print("Running Parameter Randomization...")
-        # TODO use distributed version
         parameter_randomization = ParameterRandomization(
             model_factory,
             attributions_dataset,

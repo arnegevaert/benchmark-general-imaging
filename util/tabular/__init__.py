@@ -1,6 +1,6 @@
 from .basic_nn import BasicNN
 from .openml_dataset import OpenMLDataset
-from .get_method_dict import get_method_dict
+from .get_method_dict import get_method_dict, get_method_factory
 
 _DATASETS = {
     "satimage": {"data_id": 182, "pred_type": "classification"},

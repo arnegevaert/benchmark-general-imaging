@@ -1,3 +1,4 @@
+from attribench import MethodFactory
 from util.attribution import (
     Gradient,
     InputXGradient,
@@ -14,25 +15,34 @@ from util.attribution import (
 
 
 def get_method_dict(model, reference_dataset):
-    method_dict = {
-        "Gradient": Gradient(model),
-        "InputXGradient": InputXGradient(model),
-        "DeepLift": DeepLift(model),
-        "IntegratedGradients": IntegratedGradients(
-            model, internal_batch_size=32, num_steps=25
+    method_factory = get_method_factory(reference_dataset)
+    return method_factory(model)
+
+
+def get_method_factory(reference_dataset):
+    config_dict = {
+        "Gradient": Gradient,
+        "InputXGradient": InputXGradient,
+        "DeepLift": DeepLift,
+        "IntegratedGradients": (
+            IntegratedGradients,
+            {"internal_batch_size": 32, "num_steps": 25},
         ),
-        "SmoothGrad": SmoothGrad(
-            model, num_samples=50, stdev=0.15
+        "SmoothGrad": (SmoothGrad, {"num_samples": 50, "stdev": 0.15}),
+        "VarGrad": (VarGrad, {"num_samples": 50, "stdev": 0.15}),
+        "DeepShap": (
+            DeepShap,
+            {
+                "reference_dataset": reference_dataset,
+                "num_baseline_samples": 100,
+            },
         ),
-        "VarGrad": VarGrad(model, num_samples=50, stdev=0.15),
-        "DeepShap": DeepShap(
-            model, reference_dataset=reference_dataset, num_baseline_samples=100
+        "ExpectedGradients": (
+            ExpectedGradients,
+            {"reference_dataset": reference_dataset, "num_samples": 100},
         ),
-        "ExpectedGradients": ExpectedGradients(
-            model, reference_dataset=reference_dataset, num_samples=100
-        ),
-        "Random": Random(model),
-        "KernelSHAP": KernelShap(model, num_samples=300, super_pixels=False),
-        "LIME": TabularLime(model, num_samples=300)
+        "LIME": (TabularLime, {"num_samples": 300}),
+        "KernelSHAP": (KernelShap, {"num_samples": 300, "super_pixels": False}),
+        "Random": Random,
     }
-    return method_dict
+    return MethodFactory(config_dict)
