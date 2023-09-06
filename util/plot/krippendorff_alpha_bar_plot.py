@@ -70,7 +70,10 @@ def _generate_plot(
 
 
 def generate_krippendorff_alpha_bar_plot(
-    in_dir: str, out_dir: str, dataset_colors: Dict[str, str]
+    in_dir: str,
+    out_dir: str,
+    dataset_colors: Dict[str, str],
+    data_type="image",
 ):
     mpl.use("Agg")
     np.seterr(all="raise")
@@ -84,6 +87,7 @@ def generate_krippendorff_alpha_bar_plot(
                     os.path.join(in_dir, ds_name),
                     metric_selection,
                     baseline="Random",
+                    data_type=data_type,
                 )
             else:
                 warnings.warn(

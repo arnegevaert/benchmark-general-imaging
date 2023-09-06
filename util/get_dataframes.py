@@ -92,19 +92,23 @@ def _add_infidelity(
     if infidelity_object is not None:
         perturbation_generators = ["noisy_baseline", "square"]
         for perturbation_generator in perturbation_generators:
-            if activation_fns is None:
-                activation_fns = infidelity_object.levels["activation_fn"]
-            for activation_fn in activation_fns:
-                df, higher_is_better = infidelity_object.get_df(
-                    activation_fn=activation_fn,
-                    perturbation_generator=perturbation_generator,
-                )
-                result["infidelity_" + perturbation_generator] = (
-                    _subtract_baseline(df, baseline)
-                    if baseline is not None
-                    else df,
-                    higher_is_better,
-                )
+            if (
+                perturbation_generator
+                in infidelity_object.levels["perturbation_generator"]
+            ):
+                if activation_fns is None:
+                    activation_fns = infidelity_object.levels["activation_fn"]
+                for activation_fn in activation_fns:
+                    df, higher_is_better = infidelity_object.get_df(
+                        activation_fn=activation_fn,
+                        perturbation_generator=perturbation_generator,
+                    )
+                    result["infidelity_" + perturbation_generator] = (
+                        _subtract_baseline(df, baseline)
+                        if baseline is not None
+                        else df,
+                        higher_is_better,
+                    )
 
 
 def _add_masker_activation_metrics(
@@ -198,14 +202,14 @@ def _add_no_arg_metrics(
 
 
 def _get_default_dataframes(
-    dirname: str, baseline: str | None = None
+    dirname: str, data_type: str, baseline: str | None = None
 ):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
     and the values are tuples of (dataframe, higher_is_better).
 
     Extracts the default dataframes from each metric:
-    - masker = "constant"
+    - masker = "constant" or "tabular"
     - activation_fn = "linear"
     """
     result: Dict[str, Tuple[DataFrame, bool]] = {}
@@ -215,12 +219,17 @@ def _get_default_dataframes(
         dirname,
         result,
         baseline,
-        maskers=["constant"],
+        maskers=["constant"] if data_type == "image" else ["tabular"],
         activation_fns=["linear"],
     )
 
     # Add minimal subset (masker)
-    _add_masker_metrics(dirname, result, baseline, maskers=["constant"])
+    _add_masker_metrics(
+        dirname,
+        result,
+        baseline,
+        maskers=["constant"] if data_type == "image" else ["tabular"],
+    )
 
     # Add infidelity (perturbation_generator, activation_fn)
     _add_infidelity(dirname, result, baseline, activation_fns=["linear"])
@@ -231,7 +240,9 @@ def _get_default_dataframes(
     return _rename_metrics_methods(result)
 
 
-def _get_all_dataframes(dirname: str, baseline: str | None = None):
+def _get_all_dataframes(
+    dirname: str, baseline: str | None = None
+):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
     and the values are tuples of (dataframe, higher_is_better).
@@ -265,10 +276,14 @@ def _get_all_dataframes(dirname: str, baseline: str | None = None):
 
 
 def get_dataframes(
-    dirname: str, mode="default", baseline: str | None = None
+    dirname: str,
+    mode="default",
+    baseline: str | None = None,
+    data_type="image",
 ) -> Dict[str, Tuple[DataFrame, bool]]:
+    assert data_type in ("image", "tabular")
     if mode == "default":
-        return _get_default_dataframes(dirname, baseline)
+        return _get_default_dataframes(dirname, data_type, baseline)
     elif mode == "all":
         # return _get_all_dataframes(dirname)
         return _get_all_dataframes(dirname, baseline)

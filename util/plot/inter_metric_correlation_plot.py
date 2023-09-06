@@ -8,14 +8,16 @@ import os
 from typing import List
 
 
-def generate_inter_metric_correlation_plot(in_dir: str, out_file: str):
+def generate_inter_metric_correlation_plot(
+    in_dir: str, out_file: str, data_type="image"
+):
     """Generates inter-metric correlation plot using default dataframes in
     `in_dir`.
     """
     mpl.use("Agg")
     np.seterr(all="raise")
 
-    dfs = get_dataframes(in_dir, mode="default")
+    dfs = get_dataframes(in_dir, mode="default", data_type=data_type)
     fig = plot.InterMetricCorrelationPlot(dfs).render(
         figsize=(7, 7),
         annot=False,
@@ -40,10 +42,7 @@ def generate_inter_metric_correlation_plot_with_maskers(
 
     maskers = result.levels["masker"]
     if isinstance(result, MinimalSubsetResult):
-        dfs = {
-            masker: result.get_df(masker=masker)
-            for masker in maskers
-        }
+        dfs = {masker: result.get_df(masker=masker) for masker in maskers}
     else:
         dfs = {
             masker: result.get_df(masker=masker, activation_fn="linear")

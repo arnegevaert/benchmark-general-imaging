@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 num_steps=num_inputs // 2,
             )
             result.save(
-                os.path.join(args.output_dir, f"deletion-{mode}.h5"),
+                os.path.join(args.output_dir, f"deletion_{mode}.h5"),
                 format="hdf5",
             )
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 num_steps=num_inputs // 2,
             )
             result.save(
-                os.path.join(args.output_dir, f"insertion-{mode}.h5"),
+                os.path.join(args.output_dir, f"insertion_{mode}.h5"),
                 format="hdf5",
             )
 
@@ -160,9 +160,7 @@ if __name__ == "__main__":
             num_subsets=100,
             segmented=False,
         )
-        result.save(
-            os.path.join(args.output_dir, "sensitivity_n.h5"), format="hdf5"
-        )
+        result.save(os.path.join(args.output_dir, "sens_n.h5"), format="hdf5")
 
     ###########################
     # MINIMAL_SUBSET_DELETION #
@@ -178,7 +176,7 @@ if __name__ == "__main__":
             num_steps=num_inputs,
         )
         result.save(
-            os.path.join(args.output_dir, "minimal_subset_deletion.h5"),
+            os.path.join(args.output_dir, "ms_deletion.h5"),
             format="hdf5",
         )
 
@@ -196,7 +194,7 @@ if __name__ == "__main__":
             num_steps=num_inputs,
         )
         result.save(
-            os.path.join(args.output_dir, "minimal_subset_insertion.h5"),
+            os.path.join(args.output_dir, "ms_insertion.h5"),
             format="hdf5",
         )
 
