@@ -16,7 +16,7 @@ def _generate_plot(
     k_a: pd.DataFrame,
     color=None,
     color_thresh=None,
-    groups_per_row=14,
+    groups_per_row=15,
     legend=True,
 ):
     if color is None and color_thresh is None:
@@ -88,6 +88,7 @@ def generate_krippendorff_alpha_bar_plot(
                     metric_selection,
                     baseline="Random",
                     data_type=data_type,
+                    include_pr=True,
                 )
             else:
                 warnings.warn(
