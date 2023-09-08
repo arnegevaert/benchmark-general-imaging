@@ -1,6 +1,6 @@
 import matplotlib as mpl
 import numpy as np
-from ..get_dataframes import get_dataframes
+from ..get_dataframes import get_dataframes, _rename_metrics_methods
 from attribench import plot
 from attribench.result import MetricResult, MinimalSubsetResult
 from matplotlib import pyplot as plt
@@ -17,7 +17,8 @@ def generate_inter_metric_correlation_plot(
     mpl.use("Agg")
     np.seterr(all="raise")
 
-    dfs = get_dataframes(in_dir, mode="default", data_type=data_type)
+    dfs = get_dataframes(in_dir, mode="default", data_type=data_type, include_pr=True)
+
     fig = plot.InterMetricCorrelationPlot(dfs).render(
         figsize=(7, 7),
         annot=False,
@@ -67,7 +68,7 @@ def generate_avg_inter_metric_correlation_plot(
     np.seterr(all="raise")
 
     dfs = {
-        ds_name: get_dataframes(os.path.join(in_dir, ds_name), mode="default")
+        ds_name: get_dataframes(os.path.join(in_dir, ds_name), mode="default", include_pr=True)
         for ds_name in datasets
     }
     fig = plot.AvgInterMetricCorrelationPlot(dfs).render(

@@ -19,6 +19,7 @@ METRICS = {
     "infidelity_square": "INFD - SQ",
     "infidelity_noisy_baseline": "INFD - BL",
     "infidelity_gaussian": "INFD - GA",
+    "parameter_randomization": "PR",
 }
 
 METHODS = {
@@ -128,6 +129,7 @@ def _add_masker_activation_metrics(
             "ms_insertion",
             "max_sensitivity",
             "impact_coverage",
+            "parameter_randomization"
         ]
     ]
     for metric_name in masker_activation_metrics:
@@ -198,11 +200,26 @@ def _add_no_arg_metrics(
                 else df,
                 higher_is_better,
             )
-    pass
+
+
+def _add_parameter_randomization(
+    dirname: str,
+    result: Dict[str, Tuple[DataFrame, bool]],
+    baseline: str | None = None,
+):
+    result_object = get_metric_result(dirname, "parameter_randomization")
+    if result_object is not None:
+        df, higher_is_better = result_object.get_df()
+        result["parameter_randomization"] = (
+            _subtract_baseline(df, baseline)
+            if baseline is not None
+            else df,
+            higher_is_better,
+        )
 
 
 def _get_default_dataframes(
-    dirname: str, data_type: str, baseline: str | None = None
+    dirname: str, data_type: str, baseline: str | None = None, include_pr=False
 ):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
@@ -237,11 +254,15 @@ def _get_default_dataframes(
     # Add max-sensitivity and impact coverage (no arguments)
     _add_no_arg_metrics(dirname, result, baseline)
 
+    # Add parameter randomization if specified
+    if include_pr:
+        _add_parameter_randomization(dirname, result, baseline)
+
     return _rename_metrics_methods(result)
 
 
 def _get_all_dataframes(
-    dirname: str, baseline: str | None = None
+    dirname: str, baseline: str | None = None, include_pr=False
 ):
     """
     Returns a dictionary of dataframes, where the keys are the metric names
@@ -271,7 +292,10 @@ def _get_all_dataframes(
     # Add max-sensitivity and impact coverage (no arguments)
     _add_no_arg_metrics(dirname, result, baseline)
 
-    # Add simple metrics (masker, activation_fn)
+    # Add parameter randomization if specified
+    if include_pr:
+        _add_parameter_randomization(dirname, result, baseline)
+
     return _rename_metrics_methods(result)
 
 
@@ -280,12 +304,13 @@ def get_dataframes(
     mode="default",
     baseline: str | None = None,
     data_type="image",
+    include_pr=False,
 ) -> Dict[str, Tuple[DataFrame, bool]]:
     assert data_type in ("image", "tabular")
     if mode == "default":
-        return _get_default_dataframes(dirname, data_type, baseline)
+        return _get_default_dataframes(dirname, data_type, baseline, include_pr)
     elif mode == "all":
         # return _get_all_dataframes(dirname)
-        return _get_all_dataframes(dirname, baseline)
+        return _get_all_dataframes(dirname, baseline, include_pr)
     else:
         raise ValueError("mode must be one of ['default', 'all']")
