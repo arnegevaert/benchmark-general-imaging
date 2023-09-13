@@ -58,7 +58,8 @@ if __name__ == "__main__":
         in_dir = os.path.join(args.in_dir, dataset)
         plot.generate_inter_metric_correlation_plot(
             in_dir,
-            os.path.join(corr_out_dir, dataset + ".svg"),
+            corr_out_dir,
+            dataset,
             data_type="tabular",
         )
 
@@ -92,7 +93,7 @@ if __name__ == "__main__":
         columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"}, inplace=True
     )
 
-    result_df = result_df[method_order]
+    result_df = result_df[method_order].abs()
 
     fig, ax = plt.subplots(figsize=(10, 7))
     sns.heatmap(
@@ -101,6 +102,8 @@ if __name__ == "__main__":
         ax=ax,
         cmap=sns.color_palette("RdYlGn_r", 1000),
         fmt=".2f",
+        vmin=0,
+        vmax=1,
     )
     ax.set_xticklabels(
         ax.get_xticklabels(), rotation=45, horizontalalignment="right"

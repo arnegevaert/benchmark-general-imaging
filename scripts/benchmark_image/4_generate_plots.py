@@ -87,7 +87,7 @@ if __name__ == "__main__":
         for dataset in prog:
             in_dir = os.path.join(args.in_dir, dataset)
             plot.generate_inter_metric_correlation_plot(
-                in_dir, os.path.join(corr_out_dir, dataset + ".svg")
+                in_dir, corr_out_dir, dataset, data_type="image"
             )
 
     ########################

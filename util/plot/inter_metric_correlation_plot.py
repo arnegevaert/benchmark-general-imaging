@@ -9,7 +9,7 @@ from typing import List
 
 
 def generate_inter_metric_correlation_plot(
-    in_dir: str, out_file: str, data_type="image"
+    in_dir: str, out_dir: str, dataset_name: str, data_type="image"
 ):
     """Generates inter-metric correlation plot using default dataframes in
     `in_dir`.
@@ -17,15 +17,16 @@ def generate_inter_metric_correlation_plot(
     mpl.use("Agg")
     np.seterr(all="raise")
 
-    dfs = get_dataframes(in_dir, mode="default", data_type=data_type, include_pr=True)
+    for metric_selection in ("all", "default"):
+        dfs = get_dataframes(in_dir, mode=metric_selection, data_type=data_type, include_pr=True)
 
-    fig = plot.InterMetricCorrelationPlot(dfs).render(
-        figsize=(7, 7),
-        annot=False,
-        fontsize=15,
-    )
-    fig.savefig(out_file, bbox_inches="tight")
-    plt.close(fig)
+        fig = plot.InterMetricCorrelationPlot(dfs).render(
+            figsize=(7, 7),
+            annot=False,
+            fontsize=15,
+        )
+        fig.savefig(os.path.join(out_dir, f"{dataset_name}_{metric_selection}.svg"), bbox_inches="tight")
+        plt.close(fig)
 
 
 def generate_inter_metric_correlation_plot_with_maskers(

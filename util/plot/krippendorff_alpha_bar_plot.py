@@ -123,3 +123,47 @@ def generate_krippendorff_alpha_bar_plot(
         )
         plt.close(fig)
         sns.reset_orig()
+
+
+def generate_krippendorff_alpha_bar_plot_single_dataset(
+    in_dir: str,
+    out_dir: str,
+    data_type="image",
+    color_thresh=0.5
+):
+    mpl.use("Agg")
+    np.seterr(all="raise")
+
+    for metric_selection in ("all", "default"):
+        dfs = get_dataframes(
+            in_dir,
+            metric_selection,
+            baseline="Random",
+            data_type=data_type,
+            include_pr=True,
+        )
+
+        # Compute Krippendorff Alpha for each metric in each dataset
+        # dataset_name -> metric_name -> krippendorff alpha
+        k_a = {
+            metric_name: krippendorff.alpha(
+                rankdata(df.to_numpy(), axis=1),
+                level_of_measurement="ordinal",
+            )
+            for metric_name, (df, _) in dfs.items()
+        }
+
+        sns.set()
+        k_a = pd.DataFrame(k_a, index=["alpha"]).transpose()
+
+        # Generate the figure
+        fig = _generate_plot(k_a, color_thresh=color_thresh)
+
+        fig.savefig(
+            os.path.join(
+                out_dir, f"krippendorff_alpha_{metric_selection}.svg"
+            ),
+            bbox_inches="tight",
+        )
+        plt.close(fig)
+        sns.reset_orig()
