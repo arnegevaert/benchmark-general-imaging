@@ -129,7 +129,8 @@ def generate_krippendorff_alpha_bar_plot_single_dataset(
     in_dir: str,
     out_dir: str,
     data_type="image",
-    color_thresh=0.5
+    color_thresh=0.5,
+    metric_order=None
 ):
     mpl.use("Agg")
     np.seterr(all="raise")
@@ -156,8 +157,12 @@ def generate_krippendorff_alpha_bar_plot_single_dataset(
         sns.set()
         k_a = pd.DataFrame(k_a, index=["alpha"]).transpose()
 
+        if metric_order is not None:
+            metric_order = [m for m in metric_order if m in k_a.index]
+            k_a = k_a.reindex(metric_order)
+
         # Generate the figure
-        fig = _generate_plot(k_a, color_thresh=color_thresh)
+        fig = _generate_plot(k_a, color_thresh=color_thresh, groups_per_row=14)
 
         fig.savefig(
             os.path.join(

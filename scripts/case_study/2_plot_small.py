@@ -71,8 +71,47 @@ if __name__ == "__main__":
     ############################
     if "krippendorff" in args.plots:
         prog.set_description("Generating Krippendorff Alpha plots")
+        metric_order = [
+            "Cov",
+            "MaxSens",
+            "Del - MoRF - blurring",
+            "Del - MoRF - constant",
+            "Del - MoRF - random",
+            "Del - LeRF - blurring",
+            "Del - LeRF - constant",
+            "Del - LeRF - random",
+            "Ins - MoRF - blurring",
+            "Ins - MoRF - constant",
+            "Ins - MoRF - random",
+            "Ins - LeRF - blurring",
+            "Ins - LeRF - constant",
+            "Ins - LeRF - random",
+            "IROF - MoRF - blurring",
+            "IROF - MoRF - constant",
+            "IROF - MoRF - random",
+            "IROF - LeRF - blurring",
+            "IROF - LeRF - constant",
+            "IROF - LeRF - random",
+            "SensN - blurring",
+            "SensN - constant",
+            "SensN - random",
+            "SegSensN - blurring",
+            "SegSensN - constant",
+            "SegSensN - random",
+            "INFD - SQ",
+            "INFD - BL",
+            "MSIns - blurring",
+            "MSIns - constant",
+            "MSIns - random",
+            "MSDel - blurring",
+            "MSDel - constant",
+            "MSDel - random",
+        ]
         plot.generate_krippendorff_alpha_bar_plot_single_dataset(
-            args.in_dir, args.out_dir, color_thresh=0.5
+            args.in_dir,
+            args.out_dir,
+            color_thresh=0.5,
+            metric_order=metric_order,
         )
         prog.update()
 
@@ -87,18 +126,19 @@ if __name__ == "__main__":
         df, _ = metric_result.get_df()
 
         df.rename(
-            columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"}, inplace=True
+            columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"},
+            inplace=True,
         )
         result = df.mean()
         result = result[method_order].abs()
-        
+
         fig, ax = plt.subplots(figsize=(12, 7))
         result.plot.bar(ax=ax)
 
-        #ax.set_xticklabels(
+        # ax.set_xticklabels(
         #    ax.get_xticklabels(), rotation=45, horizontalalignment="right"
-        #)
-        #ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+        # )
+        # ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
         fig.savefig(
             os.path.join(args.out_dir, "parameter_randomization.svg"),
             bbox_inches="tight",
