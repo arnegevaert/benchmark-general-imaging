@@ -9,13 +9,34 @@ from util.attribution.method_factory import get_method_factory
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dataset", type=str, default="MNIST", choices=ALL_DATASETS
+        "--dataset",
+        type=str,
+        choices=ALL_DATASETS,
+        help="Dataset to use",
+        required=True,
     )
-    parser.add_argument("--samples-file", type=str, default="samples.h5")
-    parser.add_argument("--model", type=str, default="BasicCNN")
-    parser.add_argument("--data-dir", type=str, default="data")
-    parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--output-file", type=str, default="attributions.h5")
+    parser.add_argument(
+        "--samples-file",
+        type=str,
+        help="HDF5 file with samples (produced by 1_select_samples.py)",
+        required=True,
+    )
+    parser.add_argument(
+        "--model", type=str, help="Name of model to use", required=True
+    )
+    parser.add_argument(
+        "--data-dir",
+        type=str,
+        help="Path to data directory containing datasets and models",
+        required=True,
+    )
+    parser.add_argument("--batch-size", type=int, required=True)
+    parser.add_argument(
+        "--output-file", type=str, help="Path to store results", required=True
+    )
+    parser.add_argument(
+        "--methods", type=str, nargs="*", help="Methods to use (default: all)"
+    )
     args = parser.parse_args()
 
     dataset = HDF5Dataset(args.samples_file)
@@ -25,6 +46,7 @@ if __name__ == "__main__":
     method_factory = get_method_factory(
         args.batch_size,
         reference_dataset=reference_dataset,
+        methods=args.methods,
     )
 
     computation = ComputeAttributions(

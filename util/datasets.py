@@ -1,4 +1,5 @@
 from torchvision import datasets, transforms
+import torch
 from torch.utils.data import Dataset
 from os import path
 import os
@@ -115,6 +116,17 @@ SAMPLE_SHAPES = {
     "Places365": (3, 224, 224),
     "Caltech256": (3, 224, 224),
 }
+NORMALIZATION_PARAMS = {
+    "MNIST": ((0.1307,), (0.3081,)),
+    "FashionMNIST": ((0.2859635), (0.35296154)),
+    "CIFAR10": ((0.4913, 0.4821, 0.4464), (0.247, 0.2434, 0.2615)),
+    "CIFAR100": ((0.5072, 0.4867, 0.441), (0.2673, 0.2565, 0.2762)),
+    "SVHN": ((0.4377, 0.4438, 0.4728), (0.1980, 0.2010, 0.1970)),
+    "ImageNet": ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    "Places365": ((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    "Caltech256": ((0.552, 0.5332, 0.5047), (0.3154, 0.312, 0.3256)),
+    "VOC2012": ((0.4568, 0.4386, 0.4063), (0.2666, 0.2641, 0.2783)),
+}
 
 
 def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
@@ -133,7 +145,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
         transform = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.Normalize((0.2859635), (0.35296154)),
+                transforms.Normalize(*NORMALIZATION_PARAMS["FashionMNIST"])
             ]
         )
         return datasets.FashionMNIST(
@@ -146,9 +158,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
         transform = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=(0.4913, 0.4821, 0.4464), std=(0.247, 0.2434, 0.2615)
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["CIFAR10"]),
             ]
         )
         return datasets.CIFAR10(
@@ -161,9 +171,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
         transform = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=(0.5072, 0.4867, 0.441), std=[0.2673, 0.2565, 0.2762]
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["CIFAR100"]),
             ]
         )
         return datasets.CIFAR100(
@@ -177,9 +185,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
         transform = transforms.Compose(
             [
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    (0.4377, 0.4438, 0.4728), (0.1980, 0.2010, 0.1970)
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["SVHN"]),
             ]
         )
         return datasets.SVHN(
@@ -194,9 +200,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
                 transforms.Resize(256),
                 transforms.CenterCrop(224),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["ImageNet"]),
             ]
         )
         dir = "train" if train else "val"
@@ -209,9 +213,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
                 transforms.Resize((256, 256)),
                 transforms.CenterCrop(224),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["Places365"]),
             ]
         )
         dir = "train" if train else "val"
@@ -227,9 +229,7 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
             [
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    [0.552, 0.5332, 0.5047], [0.3154, 0.312, 0.3256]
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["Caltech256"]),
             ]
         )
         dir = "Train" if train else "Test"
@@ -241,11 +241,16 @@ def get_dataset(name: str, data_dir: str, train=False) -> Dataset:
             [
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    [0.4568, 0.4386, 0.4063], [0.2666, 0.2641, 0.2783]
-                ),
+                transforms.Normalize(*NORMALIZATION_PARAMS["VOC2012"]),
             ]
         )
         return VOCDataset(
             path.join(data_dir, "VOC2012"), train=train, transform=transform
         )
+
+
+def unnormalize(images: torch.Tensor, dataset: str) -> torch.Tensor:
+    mean, std = NORMALIZATION_PARAMS[dataset]
+    mean = torch.tensor(mean).view(1, -1, 1, 1)
+    std = torch.tensor(std).view(1, -1, 1, 1)
+    return images * std + mean
