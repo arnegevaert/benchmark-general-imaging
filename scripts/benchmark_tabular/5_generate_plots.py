@@ -13,10 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("in_dir", type=str)
     parser.add_argument("out_dir", type=str)
     args = parser.parse_args()
-
-    ##########################
-    # WILCOXON SUMMARY PLOTS #
-    ##########################
+    
     method_order = [
         "DeepSHAP",
         "ExpectedGradients",
@@ -29,21 +26,27 @@ if __name__ == "__main__":
         "InputXGradient",
         "Gradient",
     ]
-    wilcoxon_out_dir = os.path.join(args.out_dir, "wilcoxon")
-    if not os.path.isdir(wilcoxon_out_dir):
-        os.makedirs(wilcoxon_out_dir)
 
-    prog = tqdm(os.listdir(args.in_dir))
-    prog.set_description("Generating Wilcoxon summary plots")
-    for dataset in prog:
-        in_dir = os.path.join(args.in_dir, dataset)
-        plot.generate_wilcoxon_summary_plots(
-            in_dir,
-            wilcoxon_out_dir,
-            method_order,
-            dataset,
-            data_type="tabular",
-        )
+    ##############################
+    # SIGNIFICANCE SUMMARY PLOTS #
+    ##############################
+    for test in ["wilcoxon", "sign_test", "t_test"]:
+        out_dir = os.path.join(args.out_dir, test)
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+
+        prog = tqdm(os.listdir(args.in_dir))
+        prog.set_description(f"Generating {test} summary plots")
+        for dataset in prog:
+            in_dir = os.path.join(args.in_dir, dataset)
+            plot.generate_significance_summary_plots(
+                in_dir,
+                out_dir,
+                method_order,
+                dataset,
+                data_type="tabular",
+                test=test,
+            )
 
     #############################
     # INTER-METRIC CORRELATIONS #

@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import os
 
 
-def generate_wilcoxon_barplot(in_dir: str, out_dir: str):
+def generate_significance_barplot(in_dir: str, out_dir: str):
     mpl.use("Agg")
     np.seterr(all="raise")
 
@@ -15,7 +15,7 @@ def generate_wilcoxon_barplot(in_dir: str, out_dir: str):
 
     for metric_selection in ("default", "all"):
         dfs = get_dataframes(in_dir, mode=metric_selection, baseline="Random")
-        wilcoxon_barplot = plot.WilcoxonBarPlot(dfs)
+        wilcoxon_barplot = plot.SignificanceBarPlot(dfs)
         fig = wilcoxon_barplot.render()
         fig.savefig(
             os.path.join(out_dir, f"wilcoxon_bar_{metric_selection}.svg"),

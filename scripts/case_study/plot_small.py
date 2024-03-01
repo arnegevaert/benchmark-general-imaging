@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ]
     if "wilcoxon" in args.plots:
         prog.set_description("Generating Wilcoxon summary plots")
-        plot.generate_wilcoxon_summary_plots(
+        plot.generate_significance_summary_plots(
             args.in_dir, args.out_dir, method_order, "wilcoxon"
         )
         prog.update()

@@ -18,6 +18,8 @@ if __name__ == "__main__":
         nargs="*",
         default=[
             "wilcoxon",
+            "sign_test",
+            "t_test",
             "corr",
             "cles",
             "krippendorff",
@@ -25,10 +27,7 @@ if __name__ == "__main__":
         ],
     )
     args = parser.parse_args()
-
-    ##########################
-    # WILCOXON SUMMARY PLOTS #
-    ##########################
+    
     method_order = [
         "DeepSHAP",
         "ExpectedGradients",
@@ -48,18 +47,23 @@ if __name__ == "__main__":
         "GuidedGradCAM",
         "Deconvolution",
     ]
-    if "wilcoxon" in args.plots:
-        wilcoxon_out_dir = os.path.join(args.out_dir, "wilcoxon")
-        if not os.path.isdir(wilcoxon_out_dir):
-            os.makedirs(wilcoxon_out_dir)
 
-        prog = tqdm(os.listdir(args.in_dir))
-        prog.set_description("Generating Wilcoxon summary plots")
-        for dataset in prog:
-            in_dir = os.path.join(args.in_dir, dataset)
-            plot.generate_wilcoxon_summary_plots(
-                in_dir, wilcoxon_out_dir, method_order, dataset
-            )
+    ##############################
+    # SIGNIFICANCE SUMMARY PLOTS #
+    ##############################
+    for test in ["wilcoxon", "sign_test", "t_test"]:
+        if test in args.plots:
+            out_dir = os.path.join(args.out_dir, test)
+            if not os.path.isdir(out_dir):
+                os.makedirs(out_dir)
+
+            prog = tqdm(os.listdir(args.in_dir))
+            prog.set_description(f"Generating {test} summary plots")
+            for dataset in prog:
+                in_dir = os.path.join(args.in_dir, dataset)
+                plot.generate_significance_summary_plots(
+                    in_dir, out_dir, method_order, dataset, test=test
+                )
 
     #############################
     # INTER-METRIC CORRELATIONS #
@@ -75,7 +79,9 @@ if __name__ == "__main__":
             "high_dim": ["ImageNet", "Places365", "Caltech256"],
         }
         prog = tqdm(dataset_groups.items())
-        prog.set_description("Generating averaged inter-metric correlation plots")
+        prog.set_description(
+            "Generating averaged inter-metric correlation plots"
+        )
         for key, datasets in prog:
             plot.generate_avg_inter_metric_correlation_plot(
                 args.in_dir, os.path.join(corr_out_dir, key + ".svg"), datasets
@@ -155,13 +161,16 @@ if __name__ == "__main__":
         results = {}
         for ds_name in os.listdir(args.in_dir):
             metric_result = MetricResult.load(
-                os.path.join(args.in_dir, ds_name, "parameter_randomization.h5")
+                os.path.join(
+                    args.in_dir, ds_name, "parameter_randomization.h5"
+                )
             )
             df, _ = metric_result.get_df()
             results[ds_name] = df.mean()
         result_df = pd.DataFrame.from_dict(results, orient="index")
         result_df.rename(
-            columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"}, inplace=True
+            columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"},
+            inplace=True,
         )
 
         result_df = result_df.reindex(
