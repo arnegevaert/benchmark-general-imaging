@@ -21,4 +21,5 @@ class SmoothGrad(AttributionMethod):
             nt_samples=self.num_samples,
             nt_samples_batch_size=1,
             stdevs=self.stdev,
+            abs=False
         )

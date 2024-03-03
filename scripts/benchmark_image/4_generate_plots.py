@@ -5,6 +5,8 @@ from util import plot
 from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from matplotlib import cm
 from attribench.result import MetricResult
 
 
@@ -27,7 +29,7 @@ if __name__ == "__main__":
         ],
     )
     args = parser.parse_args()
-    
+
     method_order = [
         "DeepSHAP",
         "ExpectedGradients",
@@ -187,12 +189,16 @@ if __name__ == "__main__":
         )
         result_df = result_df[method_order].abs()
 
+        coolwarm = cm.get_cmap("coolwarm", 256)
+        colors = [(0, coolwarm(0)), (0.5, coolwarm(256)), (1, coolwarm(256))]
+        cmap = mcolors.LinearSegmentedColormap.from_list("cmap", colors)
+
         fig, ax = plt.subplots(figsize=(12, 7))
         sns.heatmap(
             result_df,
             annot=True,
             ax=ax,
-            cmap=sns.color_palette("RdYlGn_r", 1000),
+            cmap=cmap,
             fmt=".2f",
             vmin=0,
             vmax=1,
@@ -205,3 +211,17 @@ if __name__ == "__main__":
             os.path.join(args.out_dir, "parameter_randomization.svg"),
             bbox_inches="tight",
         )
+
+    ########################################
+    # AGREEMENT TO PARAMETER RANDOMIZATION #
+    ########################################
+
+    # TODO Use rank correlation between each metric and the PR metric
+    # This can be done per image or per dataset (taking a mean or median over images)
+    # Plot as a heatmap: rows are metrics, columns are datasets
+
+    # TODO Also try plotting this using binary scores for PR: set a threshold for pass/fail
+    # and assign binary labels to each metric/dataset pair to indicate result.
+    # Then compute biserial correlation between each metric and the PR metric.
+    if "pr_agreement" in args.plots:
+        pass

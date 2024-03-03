@@ -12,7 +12,7 @@ class VarGrad(AttributionMethod):
 
     def __call__(self, batch_x: torch.Tensor, batch_target: torch.Tensor):
         # follows paper more closely, but not perfectly.
-        # sigma = self.noise_level / (x.max()-x.min()) 
+        # sigma = self.noise_level / (x.max()-x.min())
         # in paper the sigma is set per image, here per batch
         return self.method.attribute(
             batch_x,
@@ -21,4 +21,5 @@ class VarGrad(AttributionMethod):
             nt_samples=self.num_samples,
             nt_samples_batch_size=1,
             stdevs=self.stdev,
+            abs=False,
         )
