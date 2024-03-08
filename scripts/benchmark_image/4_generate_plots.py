@@ -160,6 +160,7 @@ if __name__ == "__main__":
     # PARAMETER RANDOMIZATION PLOTS #
     #################################
     if "param_randomization" in args.plots:
+        print("Generating parameter randomization plots")
         results = {}
         for ds_name in os.listdir(args.in_dir):
             metric_result = MetricResult.load(
@@ -190,7 +191,7 @@ if __name__ == "__main__":
         result_df = result_df[method_order].abs()
 
         coolwarm = cm.get_cmap("coolwarm", 256)
-        colors = [(0, coolwarm(0)), (0.5, coolwarm(256)), (1, coolwarm(256))]
+        colors = [(0, coolwarm(0)), (0.2, coolwarm(256)), (1, coolwarm(256))]
         cmap = mcolors.LinearSegmentedColormap.from_list("cmap", colors)
 
         fig, ax = plt.subplots(figsize=(12, 7))
@@ -211,17 +212,3 @@ if __name__ == "__main__":
             os.path.join(args.out_dir, "parameter_randomization.svg"),
             bbox_inches="tight",
         )
-
-    ########################################
-    # AGREEMENT TO PARAMETER RANDOMIZATION #
-    ########################################
-
-    # TODO Use rank correlation between each metric and the PR metric
-    # This can be done per image or per dataset (taking a mean or median over images)
-    # Plot as a heatmap: rows are metrics, columns are datasets
-
-    # TODO Also try plotting this using binary scores for PR: set a threshold for pass/fail
-    # and assign binary labels to each metric/dataset pair to indicate result.
-    # Then compute biserial correlation between each metric and the PR metric.
-    if "pr_agreement" in args.plots:
-        pass

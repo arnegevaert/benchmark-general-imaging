@@ -48,13 +48,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     mpl.use("Agg")
-    sns.set()
+    sns.set_theme()
     
     # Check if output directory exists and is empty
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
-    elif len(os.listdir(args.out_dir)) > 0:
-        raise ValueError("Output directory is not empty")
 
     datasets = [
         "MNIST",
@@ -63,8 +61,8 @@ if __name__ == "__main__":
         "CIFAR100",
         "SVHN",
         "ImageNet",
-        "Caltech",
-        "Places",
+        "Caltech256",
+        "Places365",
     ]
 
     snr_dfs = []

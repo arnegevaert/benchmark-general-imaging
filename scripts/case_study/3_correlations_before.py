@@ -46,7 +46,7 @@ if __name__ == "__main__":
     dfs_filtered = {key: dfs[key] for key in metric_order}
 
     fig = plot.InterMetricCorrelationPlot(dfs_filtered).render(
-        figsize=(7, 7),
+        figsize=(10, 10),
         annot=False,
         fontsize=15,
     )

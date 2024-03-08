@@ -11,27 +11,20 @@ if __name__ == "__main__":
     parser.add_argument("out_dir", type=str)
     args = parser.parse_args()
 
-    ##########################
-    # WILCOXON SUMMARY PLOTS #
-    ##########################
+    ##############################
+    # SIGNIFICANCE SUMMARY PLOTS #
+    ##############################
     method_order = [
         "DeepSHAP",
         "ExpectedGradients",
         "DeepLIFT",
         "GradCAM",
-        "GradCAM++",
-        "ScoreCAM",
-        "XRAI",
         "KernelSHAP",
         "LIME",
         "SmoothGrad",
-        "VarGrad",
         "IntegratedGradients",
         "InputXGradient",
         "Gradient",
-        "GuidedBackprop",
-        "GuidedGradCAM",
-        "Deconvolution",
     ]
     metric_order = [
         "Cov",
@@ -48,16 +41,21 @@ if __name__ == "__main__":
     dfs = get_dataframes(
         args.in_dir, "all", baseline="Random", data_type="image"
     )
-    dfs_filtered = {key: dfs[key] for key in metric_order}
-    fig = plot.WilcoxonSummaryPlot(dfs_filtered).render(
-        figsize=(12, 10),
+    dfs_metric_filtered = {key: dfs[key] for key in metric_order}
+    dfs_method_filtered = {
+        key: (df[method_order], higher_is_better)
+        for key, (df, higher_is_better) in dfs_metric_filtered.items()
+    }
+    fig = plot.SignificanceSummaryPlot(dfs_method_filtered).render(
+        figsize=(8, 8),
         glyph_scale=800,
         fontsize=25,
         method_order=method_order,
         multiple_testing="bonferroni",
+        test="t_test",
     )
     fig.savefig(
-        os.path.join(args.out_dir, f"wilcoxon.svg"),
+        os.path.join(args.out_dir, f"ttest.svg"),
         bbox_inches="tight",
     )
     plt.close(fig)

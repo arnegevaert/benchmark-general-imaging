@@ -21,6 +21,10 @@ def merge_attributions(
         method_dataset = src_file[method]
         assert isinstance(method_dataset, h5py.Dataset)
         out_file.create_dataset(method, data=method_dataset[:])
+    
+    # Copy the metadata
+    for key in dst_file.attrs:
+        out_file.attrs[key] = dst_file.attrs[key]
 
 
 if __name__ == "__main__":

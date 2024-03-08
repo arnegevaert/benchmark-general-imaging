@@ -154,7 +154,7 @@ def generate_krippendorff_alpha_bar_plot_single_dataset(
         for metric_name, (df, _) in dfs.items()
     }
 
-    sns.set()
+    sns.set_theme()
     k_a = pd.DataFrame(k_a, index=["alpha"]).transpose()
 
     if metric_order is not None:
