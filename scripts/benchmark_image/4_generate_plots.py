@@ -160,24 +160,7 @@ if __name__ == "__main__":
     # PARAMETER RANDOMIZATION PLOTS #
     #################################
     if "param_randomization" in args.plots:
-        print("Generating parameter randomization plots")
-        results = {}
-        for ds_name in os.listdir(args.in_dir):
-            metric_result = MetricResult.load(
-                os.path.join(
-                    args.in_dir, ds_name, "parameter_randomization.h5"
-                )
-            )
-            df, _ = metric_result.get_df()
-            results[ds_name] = df.mean()
-        result_df = pd.DataFrame.from_dict(results, orient="index")
-        result_df.rename(
-            columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"},
-            inplace=True,
-        )
-
-        result_df = result_df.reindex(
-            [
+        dataset_order = [
                 "MNIST",
                 "FashionMNIST",
                 "CIFAR10",
@@ -187,28 +170,7 @@ if __name__ == "__main__":
                 "Places365",
                 "Caltech256",
             ]
-        )
-        result_df = result_df[method_order].abs()
 
-        coolwarm = cm.get_cmap("coolwarm", 256)
-        colors = [(0, coolwarm(0)), (0.2, coolwarm(256)), (1, coolwarm(256))]
-        cmap = mcolors.LinearSegmentedColormap.from_list("cmap", colors)
-
-        fig, ax = plt.subplots(figsize=(12, 7))
-        sns.heatmap(
-            result_df,
-            annot=True,
-            ax=ax,
-            cmap=cmap,
-            fmt=".2f",
-            vmin=0,
-            vmax=1,
-        )
-        ax.set_xticklabels(
-            ax.get_xticklabels(), rotation=45, horizontalalignment="right"
-        )
-        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-        fig.savefig(
-            os.path.join(args.out_dir, "parameter_randomization.svg"),
-            bbox_inches="tight",
+        plot.generate_parameter_randomization_plot(
+            args.in_dir, args.out_dir, method_order, dataset_order=dataset_order
         )

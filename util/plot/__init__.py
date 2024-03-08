@@ -13,3 +13,4 @@ from .krippendorff_alpha_bar_plot import (
 from .mad_ratio_plot import generate_mad_ratio_plot
 from .significance_barplot import generate_significance_barplot
 from .significance_summary_plots import generate_significance_summary_plots
+from .parameter_randomization import generate_parameter_randomization_plot

@@ -84,35 +84,6 @@ if __name__ == "__main__":
     # PARAMETER RANDOMIZATION PLOTS #
     #################################
     print("Generating parameter randomization plot")
-    results = {}
-    for ds_name in os.listdir(args.in_dir):
-        metric_result = MetricResult.load(
-            os.path.join(args.in_dir, ds_name, "parameter_randomization.h5")
-        )
-        df, _ = metric_result.get_df()
-        results[ds_name] = df.median()
-    result_df = pd.DataFrame.from_dict(results, orient="index")
-    result_df.rename(
-        columns={"DeepShap": "DeepSHAP", "DeepLift": "DeepLIFT"}, inplace=True
-    )
-
-    result_df = result_df[method_order].abs()
-
-    fig, ax = plt.subplots(figsize=(10, 7))
-    sns.heatmap(
-        result_df,
-        annot=True,
-        ax=ax,
-        cmap=sns.color_palette("RdYlGn_r", 1000),
-        fmt=".2f",
-        vmin=0,
-        vmax=1,
-    )
-    ax.set_xticklabels(
-        ax.get_xticklabels(), rotation=45, horizontalalignment="right"
-    )
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-    fig.savefig(
-        os.path.join(args.out_dir, "parameter_randomization.svg"),
-        bbox_inches="tight",
+    plot.generate_parameter_randomization_plot(
+        args.in_dir, args.out_dir, method_order
     )
